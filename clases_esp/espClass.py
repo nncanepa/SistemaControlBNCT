@@ -3,7 +3,7 @@ import datetime
 
 class esp():
     '''
-    Clase que representa las placas de cnntrol, ya sea con una o dos fuentes a controlar. 
+    Clase que representa las placas de control, ya sea con una o dos fuentes a controlar. 
     Las placas tienen disponibles 4 lecturas analogicas de 0 a 10V, 2 escrituras analogicas (DAC)
     de 0 a 10V y 2 reles.
     Las lecturas se utilizan para leer el estado de las fuentes, tension y corriente.
