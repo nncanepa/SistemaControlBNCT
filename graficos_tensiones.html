@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<style type="text/css">
+  table{
+    background-color: #333333;
+    border: 1px solid black;
+  }
+
+.titulo{
+    font-family: "Courier";
+    
+    font-size: 14px;
+      text-align: center;
+      display: block;
+      color: #aaaaaa; /*color numeros*/
+      background-color:#000000;
+      width: 367px;
+  }
+    
+    .valor{
+    font-family: "Impact";
+    font-size: 14px;
+    display: block;
+      text-align: center;
+      width: 55px;
+      color: #ffdd00; /*color numeros*/
+  }
+.total{
+    font-family: "Impact";
+    font-size: 16px;
+    display: block;
+      text-align: center;
+      width: 100px;
+      color: #ff9900; /*color numeros*/
+  }
+
+
+  #Valor_Nivel_Total,#Valor_Corriente,#Valor_Potencia{
+    font-family: "Impact";
+    font-size: 22px;
+    display: block;
+      text-align: center;
+      width: 150px;
+      color: #ffdd00; /*color numeros*/
+  }
+
+  
+  #titulo_nivel,#titulo_total{
+    font-family: "Courier";
+    
+    font-size: 14px;
+      text-align: center;
+      display: block;
+      color: #aaaaaa; /*color numeros*/
+      background-color:#000000;
+      /*width: 140px;*/
+  }
+  
+  table{
+    background-color: #333333;
+    border: 1px solid black;
+  }
+  
+  body{background-color: #333333;
+  }
+  
+  table{
+    
+    background-color: #282828;
+    border: 1px solid black;
+  }
+  #tabla_fuente_normal,#tabla_medicion_normal{background-color: #337333;}
+  #tabla_fuente_error,#tabla_medidion_error{background-color: #933333;}
+
+  body{background-color: #333333;}
+</style>
+
+<html>
+  
+<script type="text/javascript" src="./js/smoothie.js"></script>
+
+  <body>
+    <table id=tabla_medicion_normal>
+      <tbody>
+      <td>
+        <table id="Tension_CDO">
+          <tbody>
+              <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_CDO"><details><summary>Cuadrupolos Abajo</summary>Niveles: SUP 200 300 400 500 600 </details></label></td></tr>
+              <td ><label class="valor" id="Valor_Nivel_SUP">--</label></td>
+              <td ><label class="valor" id="Valor_Nivel_200_CDO">--</label></td>
+              <td ><label class="valor" id="Valor_Nivel_300_CDO">--</label></td>
+              <td ><label class="valor" id="Valor_Nivel_400_CDO">--</label></td>
+              <td ><label class="valor" id="Valor_Nivel_500_CDO">--</label></td>
+              <td ><label class="valor" id="Valor_Nivel_600_CDO">--</label></td>
+          </tbody>
+        </table>
+        <canvas id="mycanvas_CDO" width="374" height="120"></canvas>
+      </td>
+      <td>
+        <table id="Tension_ACE">
+          <tbody>
+            <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_ACE"><details><summary>Aceleración</summary>Niveles: 100 200 300 400 500 600 </details></label></td></tr>
+            <td ><label class="valor" id="Valor_Nivel_100_ACE">--</label></td>
+            <td ><label class="valor" id="Valor_Nivel_200_ACE">--</label></td>
+            <td ><label class="valor" id="Valor_Nivel_300_ACE">--</label></td>
+            <td ><label class="valor" id="Valor_Nivel_400_ACE">--</label></td>
+            <td ><label class="valor" id="Valor_Nivel_500_ACE">--</label></td>
+            <td ><label class="valor" id="Valor_Nivel_600_ACE">--</label></td>
+          </tbody>
+        </table>    
+        <canvas id="mycanvas_ACE" width="374" height="120"></canvas>
+     </td>
+
+     <td>
+        <table id="Tension_CUP">
+          <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_CUP"><details><summary>Cuadrupolos Arriba</summary>Niveles: 100 200 300 400 500 600 </details></label></td></tr>
+          <td ><label class="valor" id="Valor_Nivel_100_CUP">--</label></td>
+          <td ><label class="valor" id="Valor_Nivel_200_CUP">--</label></td>
+          <td ><label class="valor" id="Valor_Nivel_300_CUP">--</label></td>
+          <td ><label class="valor" id="Valor_Nivel_400_CUP">--</label></td>
+          <td ><label class="valor" id="Valor_Nivel_500_CUP">--</label></td>
+          <td ><label class="valor" id="Valor_Nivel_600_CUP">--</label></td>
+        </table>
+        <canvas id="mycanvas_CUP" width="374" height="120"></canvas>   
+      </td>
+
+      <td>
+        <table cellpadding="1" cellspacing="0">
+          <tbody>
+          <td>
+            <table id="Tension_Total">
+            <tr><td colspan="9"><label id="titulo_total"><details><summary>Tensión Total</summary>Suma interfaz (kV)</details></label></td></tr>
+            <tr><td colspan="2"><label id="Valor_Nivel_Total">--</label></td></tr>
+            </table>
+          
+            <table id="Corriente">
+            <tr><td colspan="9"><label id="titulo_total"><details><summary>Corriente</summary>Faraday Cup (mA)</details></label></td></tr>
+            <tr><td colspan="2"><label id="Valor_Corriente">--</label></td></tr>
+            </table>
+
+            <table id="Potencia">
+            <tr><td colspan="9"><label id="titulo_total"><details><summary>Potencia</summary>en el blanco (W)</details></label></td></tr>
+            <tr><td colspan="2"><label id="Valor_Potencia">--</label></td></tr>
+            </table>
+            </td>
+          </tbody>
+        </table>
+      </td>
+      <td>
+        <table cellpadding="1" cellspacing="0" style="width: 0px;">
+          <tbody>
+            <td>
+              <table id="N_600_Total">
+                <tr><td colspan="9"><label id="titulo_nivel"><details><summary>Totales</summary>ESP 8</details></label></td></tr>
+                <tr><td colspan="2"><label class="total" id="total_600">--</label></td></tr>
+                <tr><td colspan="2"><label class="total" id="total_500">--</label></td></tr>
+                <tr><td colspan="2"><label class="total" id="total_400">--</label></td></tr>
+                <tr><td colspan="2"><label class="total" id="total_300">--</label></td></tr>
+                <tr><td colspan="2"><label class="total" id="total_200">--</label></td></tr>
+                <tr><td colspan="2"><label class="total" id="total_100">--</label></td></tr>
+              </table>
+            </td>
+          </tbody>
+        </table>
+      </td>
+      </tbody>
+    </table>
+</body>
+<script type="text/javascript">
+  ws = new WebSocket("ws://127.0.0.1:4000")
+  var p=0
+  var n_orden=1;
+  var line1_CUP = new TimeSeries();
+  var line2_CUP = new TimeSeries();
+  var line3_CUP = new TimeSeries();
+  var line4_CUP = new TimeSeries();
+  var line5_CUP = new TimeSeries();
+  var line6_CUP = new TimeSeries();
+  var smoothie = new SmoothieChart({interpolation:'linear',minValue:0,millisPerPixel: 60,
+  grid: { strokeStyle: 'rgb(0,80,  0)', fillStyle: 'rgb(0,30, 0)', lineWidth: 1, millisPerLine: 600  , verticalSections: 6 } });
+  smoothie.addTimeSeries(line1_CUP, { strokeStyle: 'rgb(255,   0,   0)', fillStyle: 'rgba(  0, 255,   0, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line2_CUP, { strokeStyle: 'rgb(  0, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line3_CUP, { strokeStyle: 'rgb(  0,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line4_CUP, { strokeStyle: 'rgb(255, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line5_CUP, { strokeStyle: 'rgb(255,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line6_CUP, { strokeStyle: 'rgb(  0, 255, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.streamTo(document.getElementById("mycanvas_CUP"), 500);
+  
+  var line1_ACE = new TimeSeries();
+  var line2_ACE = new TimeSeries();
+  var line3_ACE = new TimeSeries();
+  var line4_ACE = new TimeSeries();
+  var line5_ACE = new TimeSeries();
+  var line6_ACE = new TimeSeries();
+  var smoothie = new SmoothieChart({interpolation:'linear',minValue:0,millisPerPixel: 60,
+  grid: { strokeStyle: 'rgb(0,80,  0)', fillStyle: 'rgb(0,30, 0)', lineWidth: 1, millisPerLine: 600  , verticalSections: 6 } });
+  smoothie.addTimeSeries(line1_ACE, { strokeStyle: 'rgb(255,   0,   0)', fillStyle: 'rgba(  0, 255,   0, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line2_ACE, { strokeStyle: 'rgb(  0, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line3_ACE, { strokeStyle: 'rgb(  0,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line4_ACE, { strokeStyle: 'rgb(255, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line5_ACE, { strokeStyle: 'rgb(255,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line6_ACE, { strokeStyle: 'rgb(  0, 255, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.streamTo(document.getElementById("mycanvas_ACE"), 500);
+  
+  var line1_CDO = new TimeSeries();
+  var line2_CDO = new TimeSeries();
+  var line3_CDO = new TimeSeries();
+  var line4_CDO = new TimeSeries();
+  var line5_CDO = new TimeSeries();
+  var line6_CDO = new TimeSeries();
+  var smoothie = new SmoothieChart({interpolation:'linear',minValue:0,millisPerPixel: 60,
+  grid: { strokeStyle: 'rgb(0,80,  0)', fillStyle: 'rgb(0,30, 0)', lineWidth: 1, millisPerLine: 600  , verticalSections: 6 } });
+  smoothie.addTimeSeries(line1_CDO, { strokeStyle: 'rgb(255,   0,   0)', fillStyle: 'rgba(  0, 255,   0, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line2_CDO, { strokeStyle: 'rgb(  0, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line3_CDO, { strokeStyle: 'rgb(  0,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line4_CDO, { strokeStyle: 'rgb(255, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line5_CDO, { strokeStyle: 'rgb(255,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.addTimeSeries(line6_CDO, { strokeStyle: 'rgb(  0, 255, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+  smoothie.streamTo(document.getElementById("mycanvas_CDO"), 500);    
+  
+  ws.onmessage = function (event) {
+    var nombre_fuentes=["Nivel_SUP_getV","Nivel_100_CUP_getV","Nivel_200_CUP_getV","Nivel_300_CUP_getV","Nivel_400_CUP_getV","Nivel_500_CUP_getV","Nivel_600_CUP_getV",
+        "Nivel_200_CDO_getV","Nivel_300_CDO_getV","Nivel_400_CDO_getV","Nivel_500_CDO_getV","Nivel_600_CDO_getV",
+        "Nivel_100_ACE_getV","Nivel_200_ACE_getV","Nivel_300_ACE_getV","Nivel_400_ACE_getV","Nivel_500_ACE_getV","Nivel_600_ACE_getV"]
+    var data = JSON.parse(event.data);
+    var v_tot=0
+    for (var i = 0; i < nombre_fuentes.length; i++) {
+      if (nombre_fuentes[i] in data){
+        if (data[nombre_fuentes[i]]=='error'){
+          document.getElementById(('Valor_'+nombre_fuentes[i]).slice(0,-5)).style.color='#ff0000';
+        }else{
+          document.getElementById(('Valor_'+nombre_fuentes[i]).slice(0,-5)).style.color='#ffdd00';
+          v_tot=v_tot+Number(data[nombre_fuentes[i]])
+        }
+      }else{data[nombre_fuentes[i]]="0"}
+    }
+
+    i_tot=(Number(data.Nivel_FAR_getI))
+    document.getElementById('Valor_Nivel_Total').innerHTML=v_tot.toFixed(0) + ' kV';
+    document.getElementById('Valor_Corriente').innerHTML=i_tot.toFixed(2) + ' mA';
+    document.getElementById('Valor_Potencia').innerHTML=((i_tot*v_tot/10).toFixed(0)*10).toFixed(0) + ' W';
+    document.getElementById('total_100').innerHTML=(Number(data.Nivel_100_ACE_getV)+Number(data.Nivel_100_CUP_getV)).toFixed(1)+ ' kV';
+    document.getElementById('total_200').innerHTML=(Number(data.Nivel_200_ACE_getV)+Number(data.Nivel_200_CUP_getV)+Number(data.Nivel_200_CDO_getV)).toFixed(1)+ ' kV';
+    document.getElementById('total_300').innerHTML=(Number(data.Nivel_300_ACE_getV)+Number(data.Nivel_300_CUP_getV)+Number(data.Nivel_300_CDO_getV)).toFixed(1)+ ' kV';
+    document.getElementById('total_400').innerHTML=(Number(data.Nivel_400_ACE_getV)+Number(data.Nivel_400_CUP_getV)+Number(data.Nivel_400_CDO_getV)).toFixed(1)+ ' kV';
+    document.getElementById('total_500').innerHTML=(Number(data.Nivel_500_ACE_getV)+Number(data.Nivel_500_CUP_getV)+Number(data.Nivel_500_CDO_getV)).toFixed(1)+ ' kV';
+    document.getElementById('total_600').innerHTML=(Number(data.Nivel_600_ACE_getV)+Number(data.Nivel_600_CUP_getV)+Number(data.Nivel_600_CDO_getV)).toFixed(1)+ ' kV';
+    if (data){
+        line1_CUP.append(new Date().getTime(), data.Nivel_100_CUP_getV);
+        line2_CUP.append(new Date().getTime(), data.Nivel_200_CUP_getV);
+        line3_CUP.append(new Date().getTime(), data.Nivel_300_CUP_getV);
+        line4_CUP.append(new Date().getTime(), data.Nivel_400_CUP_getV);
+        line5_CUP.append(new Date().getTime(), data.Nivel_500_CUP_getV);
+        line6_CUP.append(new Date().getTime(), data.Nivel_600_CUP_getV);
+        try{document.getElementById('Valor_Nivel_100_CUP').innerHTML=Number(data.Nivel_100_CUP_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_200_CUP').innerHTML=Number(data.Nivel_200_CUP_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_300_CUP').innerHTML=Number(data.Nivel_300_CUP_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_400_CUP').innerHTML=Number(data.Nivel_400_CUP_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_500_CUP').innerHTML=Number(data.Nivel_500_CUP_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_600_CUP').innerHTML=Number(data.Nivel_600_CUP_getV).toFixed(1) + ' kV';}catch(error){}
+
+        line1_ACE.append(new Date().getTime(), Number(data.Nivel_100_ACE_getV));
+        line2_ACE.append(new Date().getTime(), Number(data.Nivel_200_ACE_getV));
+        line3_ACE.append(new Date().getTime(), Number(data.Nivel_300_ACE_getV));
+        line4_ACE.append(new Date().getTime(), Number(data.Nivel_400_ACE_getV));
+        line5_ACE.append(new Date().getTime(), Number(data.Nivel_500_ACE_getV));
+        line6_ACE.append(new Date().getTime(), Number(data.Nivel_600_ACE_getV));
+        try{document.getElementById('Valor_Nivel_100_ACE').innerHTML=Number(data.Nivel_100_ACE_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_200_ACE').innerHTML=Number(data.Nivel_200_ACE_getV).toFixed(1)+ ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_300_ACE').innerHTML=Number(data.Nivel_300_ACE_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_400_ACE').innerHTML=Number(data.Nivel_400_ACE_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_500_ACE').innerHTML=Number(data.Nivel_500_ACE_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_600_ACE').innerHTML=Number(data.Nivel_600_ACE_getV).toFixed(1) + ' kV';}catch(error){}
+
+        line1_CDO.append(new Date().getTime(), Number(data.Nivel_SUP_getV));
+        line2_CDO.append(new Date().getTime(), Number(data.Nivel_200_CDO_getV));
+        line3_CDO.append(new Date().getTime(), Number(data.Nivel_300_CDO_getV));
+        line4_CDO.append(new Date().getTime(), Number(data.Nivel_400_CDO_getV));
+        line5_CDO.append(new Date().getTime(), Number(data.Nivel_500_CDO_getV));
+        line6_CDO.append(new Date().getTime(), Number(data.Nivel_600_CDO_getV));
+        try{document.getElementById('Valor_Nivel_SUP').innerHTML=Number(data.Nivel_SUP_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_200_CDO').innerHTML=Number(data.Nivel_200_CDO_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_300_CDO').innerHTML=Number(data.Nivel_300_CDO_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_400_CDO').innerHTML=Number(data.Nivel_400_CDO_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_500_CDO').innerHTML=Number(data.Nivel_500_CDO_getV).toFixed(1) + ' kV';}catch(error){}
+        try{document.getElementById('Valor_Nivel_600_CDO').innerHTML=Number(data.Nivel_600_CDO_getV).toFixed(1) + ' kV';}catch(error){}
+      }
+        
+    if (data.count==1 && p==0){
+      setInterval(function timer(){
+      var sms={}
+      if (n_orden==1) {sms.corrientes='';n_orden=0}else{
+        sms.tensiones='';n_orden=1;  
+      }
+      
+          ws.send(JSON.stringify(sms));
+          },200)
+      p=1;
+
+      }
+  }
+  ws.onclose= function(event){
+    console.log('errorrorororo')
+    document.getElementById("tabla_medicion_normal").id='tabla_medidion_error';
+  }
+</script>
+</html>

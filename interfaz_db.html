@@ -1,0 +1,33 @@
+
+<html>
+<head>
+	<script src="./js/SQL.js"></script>
+	<script type="text/javascript">
+		var objConnection = new ActiveXObject("adodb.connection");
+		function fetchDataFromSQLiteDB() {
+	    //used http://sqlitebrowser.org/ for creating database
+	    var conn = SQL.connect( { Driver: "SQLite", Database: "./base_de_datos_acelerador.db"} );
+	 
+	    var result = conn.query("SELECT * FROM acelerador;");
+	    if(result.isValid == false) {
+	        test.log("Result is not valid, maybe no entries in database?")
+	    } else {
+	        while (result.isValid) {
+	            // do something with the result
+	            var id = result.value(0)
+	            var forename = result.value(1)
+	            var surname = result.value(2)
+	            var email = result.value(3)
+	            var phone = result.value(4)
+	            //test.log(id + forename + surname + email + phone)
+	            addEntry(forename, surname, email, phone)
+	            result.toNext();
+	        }
+	    test.log("added " + id + " entries in the addressbook application")
+	 }
+	}
+	</script>
+	<body>	 
+		<button onclick="fetchDataFromSQLiteDB()">apretar</button>
+	</body>
+</html>

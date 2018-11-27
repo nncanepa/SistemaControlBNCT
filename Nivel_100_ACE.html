@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+
+<style type="text/css">
+button{
+	width: 50px;
+	height: 25px;
+	font-family: "Impact";
+	padding: 0px 0px;
+	
+	display: inline-block;
+	color: #ff9900; /*color texto*/
+	color: #009933;
+
+	cursor: pointer;
+	background: #000;
+	background: #112211;
+	border: 1px solid #444444;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 8px;
+	-o-border-radius: 4px;
+	box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	-moz-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	-o-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	cursor: pointer;
+	border: 1px solid #0B180F;
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.8), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+}
+button:focus{
+	outline: none !important;
+}
+#cambiar,#canal{
+	font-family: "Arial";
+	font-weight:bold;
+	font-size: 12px;
+}
+button:active{
+	background: #000;
+}
+#valor,#rampa_valorv_up,#rampa_valort_up
+,#rampa_valorv_do,#rampa_valort_do
+,#rampa_valorv_ace,#rampa_valort_ace{
+	font-family: "Impact";
+	font-size: 28px;
+	display: block;
+	text-align: center;
+	width: 102.5px;
+	color: #ff9900;
+	color: #669900;
+}
+#tipo{
+	font-family: "Courier";
+	font-weight: bold;
+	font-size: 14px;
+	display: block;
+	text-align: center;
+	color: #ff9900;
+}
+#titulo{
+	font-family: "Courier";
+	font-size: 14px;
+	text-align: center;
+	display: block;
+	color: #aaaaaa;
+	background-color:#000000;
+	width: all;
+}
+table{
+	background-color: #333333;
+	background-color: #282828;
+	border: 0px solid black;
+}
+body{background-color: #333333;}
+#tabla_fuente_normal,#tabla_medicion_normal{background-color: #337333;}
+#tabla_fuente_error,#tabla_medidion_error{background-color: #933333;}
+img{filter:hue-rotate(-23deg) saturate(8);}
+img{filter:hue-rotate(65deg) saturate(1) brightness(.7);}
+
+button.cerrado{
+	font-family: "Impact";
+	font-size: 20px;
+	width: 35px;
+	height: 25px;
+	
+	padding: 0px 0px;
+	
+	display: inline-block;
+	color: #ff0055;
+	
+	cursor: pointer;
+	background: #4F1111;
+	
+	border: 1px solid #33330F;
+	border-radius: 6px;
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.8), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+}	
+
+button.abierto{
+	font-family: "Impact";
+	font-size: 20px;
+	width: 35px;
+	height: 25px;
+	
+	padding: 0px 0px;
+	
+	display: inline-block;
+	color: #009933;
+	
+	cursor: pointer;
+	background: #112211;
+	
+	border: 1px solid #0B180F;
+	border-radius: 6px;
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.8), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+}
+
+button.activa{
+	font-family: "Impact";
+	padding: 0px 0px;
+	
+	display: inline-block;
+	color: #ff0055;
+	
+	cursor: pointer;
+	background: #115511;
+	
+	border: 1px solid #33330F;
+	border-radius: 6px;
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.8), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+}
+button.inactivo{
+	font-family: "Impact";
+	font-size: 20px;
+	width: 35px;
+	height: 25px;
+	
+	padding: 0px 0px;
+	
+	display: inline-block;
+	color: #220022;
+	
+	cursor: pointer;
+	background: #111111;
+	
+	border: 1px solid #180B0F;
+	border-radius: 6px;
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.8), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+}
+label.cup{
+	font-family: "Impact;"
+		font-size: 8px;
+		color: #aa0;
+}
+label.cdo{
+	font-family: "Impact;"
+		font-size: 8px;
+		color: #0a0;
+}
+label.ace{
+	font-family: "Impact;"
+		font-size: 8px;
+		color: #0aa;
+}
+.lineal{
+  display: inline-block;
+}
+.brampa{
+	display: none;
+}
+
+</style>
+
+<html>
+<body onload="actualizar_lista()">
+
+<script type="text/javascript">
+	function actualizar_lista(){
+		lista=document.querySelectorAll("input")
+		fuentes_activas=JSON.parse(localStorage.getItem("fuentes_activas"))
+		if (fuentes_activas){
+			for (var i = 0; i < fuentes_activas.length; i++) {
+				console.log(fuentes_activas[i])
+				if (fuentes_activas[i]=="0"){
+					console.log(lista[i])
+					try{document.getElementById(lista[i].id.slice(2)+'_CUP').style.display="none"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_ACE').style.display="none"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_CDO').style.display="none"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)).style.display="none"}catch(error){}
+					console.log(lista[i].id.slice(2))
+					lista[i].checked=false
+				}else{
+					try{document.getElementById(lista[i].id.slice(2)+'_CUP').style.display="block"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_ACE').style.display="block"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_CDO').style.display="block"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)).style.display="block"}catch(error){}
+					console.log(lista[i].id.slice(2))
+					lista[i].checked=true
+				}	
+			}
+		}
+		console.log('lista actualizada')
+	}
+	
+	function definir(){
+		console.log("aprete definir")
+		lista=document.querySelectorAll("input")
+		console.log(lista)
+		console.log(lista.length)
+		fuentes_activas=[]
+		for (var i = 0; i < lista.length; i++) {
+			console.log(lista[i].id.slice(2))
+				if (!lista[i].checked){
+					try{document.getElementById(lista[i].id.slice(2)+'_CUP').style.display="none"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_ACE').style.display="none"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_CDO').style.display="none"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)).style.display="none"}catch(error){}
+					fuentes_activas[i]=0
+				}else{
+					try{document.getElementById(lista[i].id.slice(2)+'_CUP').style.display="block"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_ACE').style.display="block"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)+'_CDO').style.display="block"}catch(error){}
+					try{document.getElementById(lista[i].id.slice(2)).style.display="block"}catch(error){}
+					fuentes_activas[i]=1
+				}	
+		}
+		localStorage.setItem("fuentes_activas",JSON.stringify(fuentes_activas))
+	}
+</script>
+
+<table id="table_bar" style="display:none;">
+	<tbody>
+		<tr>
+			<tr><li class="lineal"><input type="checkbox" checked="" id="S_Nivel_600"><label class="ace">Nivel 600 kV ACE</label></li></tr>
+			<tr><li class="lineal"><input type="checkbox" checked="" id="S_Nivel_500"><label class="ace">Nivel 500 kV ACE</label></li></tr>
+			<tr><li class="lineal"><input type="checkbox" checked="" id="S_Nivel_400"><label class="ace">Nivel 400 kV ACE</label></li></tr>
+			<tr><li class="lineal"><input type="checkbox" checked="" id="S_Nivel_300"><label class="ace">Nivel 300 kV ACE</label></li></tr>
+			<tr><li class="lineal"><input type="checkbox" checked="" id="S_Nivel_200"><label class="ace">Nivel 200 kV ACE</label></li></tr>
+			<tr><li class="lineal"><input type="checkbox" checked="" id="S_Nivel_100"><label class="ace">Nivel 100 kV ACE</label></li></tr>
+			<tr><li class="lineal"><input type="checkbox" checked="" id="S_Nivel_SUP"><label class="cdo">Nivel SUP</label></li></tr>
+			<tr><li class="lineal"></li></tr>
+		</tr>
+	</tbody>
+</table>
+<button onclick="definir()" style="width: 100px;height:30px; align-content: left;">Definir</button>
+	
+
+<table id='tabla_fuente_normal' style="margin-left:-4px">
+			<td>
+				<table id="Nivel_600_CDO" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_600_CDO</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_500_CDO" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_500_CDO</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_400_CDO" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_400_CDO</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_300_CDO" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_300_CDO</summary>ESP fuente triple 1 mati</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_200_CDO" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_200_CDO</summary>ESP doble salida 1</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_SUP" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>SUPRESORA</summary>ESP Supresora y Faraday Cup</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+			</td>
+			<td>
+				<table id="Nivel_600_ACE" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_600_ACE</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_500_ACE" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_500_ACE</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_400_ACE" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_400_ACE</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_300_ACE" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_300_ACE</summary>ESP fuente triple 1 mati</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_200_ACE" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_200_ACE</summary>ESP doble salida 2</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_100_ACE" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_100_ACE</summary>ESP simple a tierra</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+			</td>
+			<td>
+				<table id="Nivel_600_CUP" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_600_CUP</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_500_CUP" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_500_CUP</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_400_CUP" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_400_CUP</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_300_CUP" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_300_CUP</summary>ESP fuente triple 1 mati</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_200_CUP" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_200_CUP</summary>ESP simple acelerador</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+				<table id="Nivel_100_CUP" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_100_CUP</summary>ESP simple sarcofago up</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)" text='OFF'></button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+			</td>
+</table>
+		<!-- rampas no habilitadas -->
+<table style="display:none;">
+	<td>
+	<table id="Rampa_CDO">
+		<tr ><td colspan="9"><label id="titulo"><details><summary>Rampa_CDO</summary>ESP003 SP 10kV 120mA</details></label></td></tr>
+		<tr>
+			<td colspan="1"><label ondblclick="editar_rampa(event)" id="rampa_valorv_do">5 kV</label></td>
+			<td colspan="1"><label ondblclick="editar_rampa(event)" id="rampa_valort_do">2 seg</label></td>
+		</tr>
+	</table>
+	</td>
+	<td>
+	<table id="Rampa_ACE">
+		<tr ><td colspan="9"><label id="titulo"><details><summary>Rampa_ACE</summary>ESP003 SP 10kV 120mA</details></label></td></tr>
+		<tr>
+			<td colspan="1"><label ondblclick="editar_rampa(event)" id="rampa_valorv_ace">5 kV</label></td>
+			<td colspan="1"><label ondblclick="editar_rampa(event)" id="rampa_valort_ace">2 seg</label></td>
+		</tr>
+	</table>
+	</td>
+	<td>
+	<table id="Rampa_CUP">
+		<tr><td colspan="9"><label id="titulo"><details><summary>Rampa_CUP</summary>ESP003 SP 10kV 120mA</details></label></td></tr>
+		<tr>
+			<td colspan="1"><label ondblclick="editar_rampa(event)" id="rampa_valorv_up">3 kV</label></td>
+			<td colspan="1"><label ondblclick="editar_rampa(event)" id="rampa_valort_up">2 seg</label></td>
+		</tr>
+	</table>
+	</td>
+</table>    
+
+<table> <!-- graficos -->
+	<tr>
+		<tr><iframe style="margin-left:-14px" src="./graficos_tensiones.html" width="1430px" height="210px" frameborder="0"></iframe></tr>
+		<tr><iframe style="margin-left:-14px;margin-top:-24px;" src="./graficos_corrientes.html" width="1300px" height="200px" frameborder="0"></iframe></tr>
+	</tr>
+</table>	
+</body>
+</html>
+
+<script type="text/javascript">
+	websocket = new WebSocket("ws://127.0.0.1:6600/");
+	websocket.onmessage = function (event) {
+		data = JSON.parse(event.data);
+		switch (data.type) {
+        case 'state':
+        	if (data.fuente.slice(-1)=='E'){res=1}else{res=2}
+            if (data.accion=='set'){
+            	document.getElementById(data.fuente).querySelector("#valor").innerHTML=data.valorv.toFixed(res)+' kV';
+            	if (data.encendido==true){
+            		document.getElementById(data.fuente).querySelector("#cambiar").innerHTML='ON';
+            		document.getElementById(data.fuente).querySelector("#cambiar").className='abierto';
+            	
+            	}else{
+            		document.getElementById(data.fuente).querySelector("#cambiar").innerHTML='OFF';
+            		document.getElementById(data.fuente).querySelector("#cambiar").className='cerrado';
+            	}
+            break}
+            if (data.accion=='encendido'){
+            	if (data.encendido==true){
+            		document.getElementById(data.fuente).querySelector("#cambiar").innerHTML='ON';
+            		document.getElementById(data.fuente).querySelector("#cambiar").className='abierto';
+            	}else{
+            		document.getElementById(data.fuente).querySelector("#cambiar").innerHTML='OFF';
+            		document.getElementById(data.fuente).querySelector("#cambiar").className='cerrado';
+            	}
+        	}	
+            if (data.accion=='rampa_subir_activa'){
+            	document.getElementById(data.fuente).querySelector("#valor").innerHTML=data.valorv.toFixed(2)+' kV'
+            	document.getElementById(data.fuente).querySelector("#rampa_subir").className='activa';
+            	var sms={}
+            	sms.accion='rampa_subir_seguir'
+            	sms.fuente=data.fuente
+       			websocket.send(JSON.stringify(sms));
+            break;
+            }
+            if (data.accion=='rampa_subir_finalizada' || data.accion=='rampa_subir_anulada'){
+            	document.getElementById(data.fuente).querySelector("#valor").innerHTML=data.valorv.toFixed(2)+' kV'
+            	document.getElementById(data.fuente).querySelector("#rampa_subir").className='';
+            	document.getElementById(data.fuente).querySelector("#rampa_bajar").className='';
+            break;
+            }
+            if (data.accion=='rampa_bajar_finalizada' || data.accion=='rampa_bajar_anulada'){
+            	document.getElementById(data.fuente).querySelector("#valor").innerHTML=data.valorv.toFixed(2)+' kV'
+            	document.getElementById(data.fuente).querySelector("#rampa_subir").className='';
+            	document.getElementById(data.fuente).querySelector("#rampa_bajar").className='';
+            break;
+            }
+            if (data.accion=='rampa_bajar_activa'){
+            	document.getElementById(data.fuente).querySelector("#valor").innerHTML=data.valorv.toFixed(2)+' kV'
+            	document.getElementById(data.fuente).querySelector("#rampa_bajar").className='activa';
+            	var sms={}
+            	sms.accion='rampa_bajar_seguir'
+            	sms.fuente=data.fuente
+       			websocket.send(JSON.stringify(sms));
+            break;
+            }
+        case 'users':
+            break;
+        default:
+            console.error("unsupported event", data);
+        }	
+	}
+	setInterval(function timer(){
+          var sms={}
+          sms.accion='actualizar'
+              websocket.send(JSON.stringify(sms));
+              },2000)
+	function mensaje(event){
+		console.log(event)
+		// me fijo que boton, de que fuente y que valor tiene
+		fuente=event.target.closest( "table" ).id;
+		accion=event.target.closest( "button").id;
+		valor =event.target.closest( "table" ).querySelector("#valor").innerHTML;
+		// accion step unico
+		if (accion=='paso_subir' || accion=='paso_bajar'){
+			var sube_baja=[]
+			sube_baja['paso_subir']=1
+			sube_baja['paso_bajar']=-1
+			if (valor!='--'){
+				var sms={}
+				if (fuente.slice(-1)=='O'){paso=.05*sube_baja[accion];}
+				if (fuente.slice(-1)=='E'){paso=.50*sube_baja[accion];}
+				if (fuente.slice(-1)=='P'){paso=.05*sube_baja[accion];}
+				sms.accion='paso'
+				sms.fuente=fuente
+				sms.paso=paso
+				websocket.send(JSON.stringify(sms));
+			}
+		}
+		//accion prender apagar
+		if (accion=='cambiar'){
+			if (valor!='--'){
+				var sms={}
+				sms.accion=accion
+				sms.fuente=fuente
+				sms.estado=event.target.closest( "table" ).querySelector("#cambiar").innerHTML;
+				websocket.send(JSON.stringify(sms));}
+		}
+		//accion rampa subir
+		if (accion=='rampa_subir' || accion=='rampa_bajar'){
+			var sube_baja_rampa=[]
+			sube_baja_rampa['rampa_subir']=1
+			sube_baja_rampa['rampa_bajar']=-1
+			var sms={}
+			sms.accion='rampa'
+			sms.fuente=fuente
+			if (fuente.slice(-1)=='O'){
+				paso=rampa_valorv_do.innerHTML.split(' ')[0];
+				tiempo=rampa_valort_do.innerHTML.split(' ')[0];
+			}
+			if (fuente.slice(-1)=='E'){
+				paso=rampa_valorv_ace.innerHTML.split(' ')[0];
+				tiempo=rampa_valort_ace.innerHTML.split(' ')[0];
+			}
+			if (fuente.slice(-1)=='P'){
+				paso=rampa_valorv_up.innerHTML.split(' ')[0];
+				tiempo=rampa_valort_up.innerHTML.split(' ')[0];
+			}
+			if (valor!='--'){
+				sms.valorv=paso*sube_baja_rampa[accion];
+				sms.valort=tiempo;
+				websocket.send(JSON.stringify(sms));
+			}
+		}
+	}
+		
+	function mensaje_iterado(fuente,accion,valor){
+		paso=rampa_valorv_do.innerHTML.split(' ')[0];
+		tiempo=rampa_valort_do.innerHTML.split(' ')[0];
+		sms.accion=accion
+		sms.fuente=fuente
+		sms.valorv=paso
+		sms.valort=tiempo	
+		websocket.send(JSON.stringify(sms));
+	}
+
+	function editar_rampa(event){
+		var valor=event.target.closest( "label");
+		valor_numero=valor.innerHTML.split(' ')[0]
+		valor_unidad=valor.innerHTML.split(' ')[1]
+
+		var valor_nuevo = prompt("ingrese el valor", valor.innerHTML.split(' ')[0]);
+		if (isNaN(valor_nuevo)){alert(valor_nuevo+' no es valido')
+		}else{valor.innerHTML=valor_nuevo+' '+valor_unidad;
+		}
+	}
+	function editar(event){
+		var valor=event.target.closest( "label");
+		valor_numero=valor.innerHTML.split(' ')[0]
+		valor_unidad=valor.innerHTML.split(' ')[1]
+		var valor_nuevo = prompt("ingrese el valor", valor.innerHTML.split(' ')[0]);
+		if (isNaN(valor_nuevo)){
+			alert(valor_nuevo+' no es valido')
+		}
+		else{
+			if(valor.innerHTML!='--'){
+				fuente=event.target.closest( "table" ).id;
+				accion='setear';
+				var sms={}
+				sms.accion=accion
+				sms.fuente=fuente
+				sms.valorv=valor_nuevo/1
+				websocket.send(JSON.stringify(sms));
+			}else{
+				alert("esta fuente no esta activa en el servidor")				
+			}
+		}
+	}
+	websocket.onclose = function (event) {document.getElementById("tabla_fuente_normal").id='tabla_fuente_error';}
+</script>
