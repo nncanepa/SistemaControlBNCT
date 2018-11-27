@@ -13,23 +13,19 @@ from clases_esp.configESP import *
 
 ##################EN PLACAS VAN LAS INSTANCIAS CREADAS QUE SE QUIERAN UTILIZAR #################
 
-placas=[placa_1,placa_2,placa_3,placa_4,placa_5,placa_9]
+placas = [placa_1,placa_2,placa_3,placa_4,placa_5,placa_9]
 global tiempo_sms
-tiempo_sms=datetime.datetime.now()
-dt=datetime.timedelta(seconds=0.2)
+tiempo_sms = datetime.datetime.now()
 
 ################################ CONFIGURACION BASE DE DATOS ####################################
 # conectarse a la base de datos
-
-conn = sqlite3.connect('./base_de_datos_acelerador.db')
-curr = conn.cursor()
 
 def insertar(que,donde):
     '''
     Funcion para insertar valores facilmente en la base de datos.
     '''
     conn = sqlite3.connect('./base_de_datos_acelerador.db')
-    cursor = conn.cursor()    
+    cursor = conn.cursor()
     columns =', '.join(que)
     placeholders = ', '.join('?' * len(que))
     sql = 'INSERT INTO '+donde+' ({}) VALUES ({})'.format(columns, placeholders)
@@ -37,60 +33,77 @@ def insertar(que,donde):
     conn.commit()
     conn.close()
 
-curr.execute("SELECT name FROM sqlite_master WHERE type='table';")
-if not curr.fetchall(): # si no tiene tablas crear tabla acelerador
-    curr.execute('CREATE TABLE acelerador (fuente text,mac text)')
-    h={}
-    for placa in placas:
-        for f in placa.lista_fuentes:
-            h['fuente']=f
-            h['mac']='No inplementado aun'
-            insertar(h,'acelerador')
+def initTablas(placas):
+    '''
+    Funcion que chequea si existen las tablas necesarias,
+    si no existen las crea.
+    '''
+    conn = sqlite3.connect('./base_de_datos_acelerador.db')
+    curr = conn.cursor()
+    curr.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    #si no tiene tablas crear tabla acelerador
+    if not curr.fetchall(): 
+        curr.execute('CREATE TABLE acelerador (fuente text,mac text)')
+        h={}
+        for placa in placas:
+            for f in placa.lista_fuentes:
+                h['fuente']=f
+                h['mac']='No inplementado aun'
+                insertar(h,'acelerador')
+    try:
+        #intento leer tabla escrituras si no puedo la creo
+        curr.execute("SELECT * FROM escrituras;") 
+    except: 
+        #crear tabla de escrituras
+        s='(tiempo text,'
+        for placa in placas:
+            for param_lec in placa.variables_lectura:
+                s=s+placa.variables_lectura[param_lec]+' text,'
+        s=s[:-1]+')'
+        print(s)
+        curr.execute('CREATE TABLE escrituras '+s)
+    finally:
+        conn.commit()
+        conn.close()
 
-
-try:
-    curr.execute("SELECT * FROM escrituras;") #intento leer tabla escrituras si no puedo la creo
-except: #crear tabla de escrituras
-    s='(tiempo text,'
-    for placa in placas:
-        for param_lec in placa.variables_lectura:
-            s=s+placa.variables_lectura[param_lec]+' text,'
-    s=s[:-1]+')'
-    print(s)
-    curr.execute('CREATE TABLE escrituras '+s)
-
-conn.commit()
-conn.close()
+# Inicializo la base de datos.
+initTablas(placas)
 ############################# FIN CONFIGURACION BASE DE DATOS ####################################
 
 def escritura_db():
-    ''' 
+    '''
     Esta funcion es llamada por el on_message del mqtt para guardar los datos.
     Escribe en la base de datos cuando recibo algun mensaje de una placa.
     '''
     dic_vals={'tiempo':str(datetime.datetime.now().isoformat())}
     sdic_vals={}
-    for placa in placas: # leo los ultimos valores de las placas y creo un diccionario
-        dic_vals.update(placa.ultimo_lec)   
-    for j in dic_vals: #convierto los valores a string
+    # Leo los ultimos valores de las placas y creo un diccionario
+    for placa in placas:
+        dic_vals.update(placa.ultimo_lec)
+    # Convierto los valores a string
+    for j in dic_vals:
         sdic_vals.update({j:str(dic_vals[j])})
-    insertar(sdic_vals,'escrituras') # inserto los valores en la base de datos
+    # Inserto los valores en la base de datos
+    insertar(sdic_vals,'escrituras')
 ######################################################################################
     
 ###################### escrutura clasica del websocket ###############################
 STATE = {'fuente':'','accion':'','valorv': 0,'valort': 0,'encendido':False}
 USERS = set()
-async def register(websocket): # modificada para mandar el estado actual
+
+# Modificada para mandar el estado actual
+async def register(websocket):
     USERS.add(websocket)
-    for placa in placas: # cuando un usuario se conecta le envia la info de las placas
+    # Cuando un usuario se conecta le envia la info de las placas
+    for placa in placas:
         for f in placa.lista_fuentes:
             STATE['fuente'] = f
             try:
-                STATE['valorv']  = placa.ultimo_esc[f+'_setV']
+                STATE['valorv'] = placa.ultimo_esc[f+'_setV']
             except:
                 pass
             try:
-                STATE['encendido']  = placa.ultimo_esc[f+'_onoff']
+                STATE['encendido'] = placa.ultimo_esc[f+'_onoff']
             except:
                 pass
             STATE['accion']  = 'set'
@@ -104,12 +117,14 @@ def state_event():
     return json.dumps({'type': 'state', **STATE})
 
 async def notify_state():
-    if USERS:       # asyncio.wait doesn't accept an empty list
+    # asyncio.wait doesn't accept an empty list
+    if USERS:
         message = state_event()
         await asyncio.wait([user.send(message) for user in USERS])
         
 async def notify_users():
-    if USERS:       # asyncio.wait doesn't accept an empty list
+    # asyncio.wait doesn't accept an empty list
+    if USERS:
         message = users_event()
         await asyncio.wait([user.send(message) for user in USERS])
         
@@ -119,42 +134,54 @@ async def unregister(websocket):
 #######################################################################################
 
 ######################## ##hilo principal del websocket ###############################
-async def hilo_del_ws(websocket, path): # aca esta el codigo que intertreta los mensajes de la pagina
+# Aca esta el codigo que interpreta los mensajes de la pagina
+async def hilo_del_ws(websocket, path):
     await register(websocket)
     try:
-        async for message in websocket: # espero mensajes de la pagina
+        # Wspero mensajes de la pagina
+        async for message in websocket:
             # recibo mensaje de la pagina
             sms=json.loads(message)
             
-            if sms['accion']=='actualizar':
+            if sms['accion'] == 'actualizar':
                 for placa in placas:
-                    sms_topic,sms_txt=placa.set_valores(placa.ultimo_esc) # creo el mensaje para la placa
-                    mqttc.publish(sms_topic,sms_txt) # publico el mensaje en el broker mqtt                    
+                    # Creo el mensaje para la placa
+                    sms_topic, sms_txt = placa.set_valores(placa.ultimo_esc)
+                    # Publico el mensaje en el broker mqtt
+                    mqttc.publish(sms_topic, sms_txt)
             else:
                 # me fijo sobre que placa esp se quiere actuar
                 for placa in placas:
                     if sms['fuente'] in placa.lista_fuentes:
-                        placa_select=placa
-                # para la placa seleccionada me fijo que accion debe realizar
-                if sms['accion']=='paso': # subir o bajar fuente (el signo del paso hace que suba o baje)
-                    placa_select.ultimo_esc[sms['fuente']+'_setV']+=sms['paso']
-                if sms['accion']=='cambiar': # esto cambia el estado de la fuente entre prendido y apagado
-                    placa_select.ultimo_esc[sms['fuente']+'_onoff']=round(1-placa_select.ultimo_esc[sms['fuente']+'_onoff'])
+                        placa_select = placa
+                # Para la placa seleccionada me fijo que accion debe realizar
+                ##
+                # Eubir o bajar fuente (el signo del paso hace que suba o baje)
+                if sms['accion'] == 'paso':
+                    placa_select.ultimo_esc[sms['fuente'] + '_setV'] += sms['paso']
+                # eEto cambia el estado de la fuente entre prendido y apagado
+                if sms['accion']=='cambiar':
+                    placa_select.ultimo_esc[sms['fuente'] + '_onoff'] = \
+                                            round(1 - placa_select.ultimo_esc[sms['fuente'] + '_onoff'])
                 
                 # falta implementar rampas
                 #if sms['accion']=='rampa':
                     #placa_select.ultimo_esc[sms['fuente']+'_onoff']+=round(1-placa_select.ultimo_esc[sms['fuente']+'_onoff'])
-                
-                if sms['accion']=='setear': # directamente manda el valor enviado por la pagina a la placa
-                    placa_select.ultimo_esc[sms['fuente']+'_setV']=sms['valorv']
-                
-                # envio a la pagina los valores actualizados de la fuente que se modificaron
+
+                # Directamente manda el valor enviado por la pagina a la placa
+                if sms['accion'] == 'setear':
+                    placa_select.ultimo_esc[sms['fuente'] + '_setV'] = sms['valorv']
+
+                # Envio a la pagina los valores actualizados de la fuente que se modificaron
                 STATE['fuente'] = sms['fuente']
-                STATE['valorv']  = placa_select.ultimo_esc[sms['fuente']+'_setV']
-                STATE['encendido']=placa_select.ultimo_esc[sms['fuente']+'_onoff']
-                STATE['accion'] = 'set'            # esto le indica a la pagina que debe actualizar los valores
-                sms_topic,sms_txt=placa_select.set_valores(placa_select.ultimo_esc) # creo el mensaje para la placa
-                mqttc.publish(sms_topic,sms_txt) # publico el mensaje en el broker mqtt
+                STATE['valorv'] = placa_select.ultimo_esc[sms['fuente'] + '_setV']
+                STATE['encendido']=placa_select.ultimo_esc[sms['fuente'] + '_onoff']
+                # Esto le indica a la pagina que debe actualizar los valores
+                STATE['accion'] = 'set'
+                # Creo el mensaje para la placa
+                sms_topic, sms_txt = placa_select.set_valores(placa_select.ultimo_esc)
+                # Publico el mensaje en el broker mqtt
+                mqttc.publish(sms_topic, sms_txt)
                 print(placa_select.ultimo_lec)
             await notify_state()
     finally:
@@ -165,21 +192,21 @@ async def hilo_del_ws(websocket, path): # aca esta el codigo que intertreta los 
 ########################## comunicacion con el broker mqtt ##################################
 def on_message(mqttc, obj, msg):
     global tiempo_sms
-    tiempo_comparar=datetime.datetime.now()-datetime.timedelta(seconds=5)
+    tiempo_comparar = datetime.datetime.now()-datetime.timedelta(seconds=5)
     
     for placa in placas:
-        if placa.ultimo_tiempo<tiempo_comparar:
+        if placa.ultimo_tiempo < tiempo_comparar:
             for  v in placa.ultimo_lec.keys():
-                placa.ultimo_lec[v]='error'
+                placa.ultimo_lec[v] = 'error'
             
         if msg.topic in placa.topic_lec:
-            placa_select=placa
-            placa_select.ultimo_tiempo=datetime.datetime.now()
+            placa_select = placa
+            placa_select.ultimo_tiempo = datetime.datetime.now()
         
     placa_select.get_valores(msg)
-    tiempo_comparar=datetime.datetime.now()-datetime.timedelta(seconds=.2)
-    if tiempo_sms<tiempo_comparar:
-        tiempo_sms=datetime.datetime.now()
+    tiempo_comparar = datetime.datetime.now() - datetime.timedelta(seconds = .2)
+    if tiempo_sms < tiempo_comparar:
+        tiempo_sms = datetime.datetime.now()
         escritura_db()
  
     
@@ -188,7 +215,7 @@ mqttc = mqtt.Client()
 mqttc.connect(server, 1883, 60)
 mqttc.on_message = on_message
 for placa in placas:
-    mqttc.subscribe(placa.topic_lec,0)
+    mqttc.subscribe(placa.topic_lec, 0)
 mqttc.loop_start()
 #############################################################################################
 

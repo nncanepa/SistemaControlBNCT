@@ -13,7 +13,7 @@ class esp():
     def __init__(self):
         '''
         Inicializa la clase con la cantidad de valores necesarios para las fuentes conectadas a esta placa.
-        Asi como el template de los mensajes a enviar y los topics necesarios para comunicarse mediante MQTT
+        Asi como el template de los mensajes a enviar y los topics necesarios para comunicarse mediante MQTT.
         lista_lec: Diccionario con las variables a leer de la/s fuente/s.
         lista_esc: Diccionario con las variables a escribir en la/s fuente/s.
         lista_fuentes: Set con las fuentes controladas por la placa.
@@ -21,58 +21,73 @@ class esp():
         ultimo_esc: Diccionario con los ultimos valores leidos
         ultimo_tiempo: Hora de ultima comunicacion de la esp
         '''
-        self.variables_lectura={}
-        self.variables_escritura={}
-        self.lista_fuentes=set()
-        self.ultimo_lec={}
-        self.ultimo_esc={}
-        self.ultimo_tiempo=datetime.datetime.now()
+        self.variables_lectura = {}
+        self.variables_escritura = {}
+        self.lista_fuentes = set()
+        self.ultimo_lec = {}
+        self.ultimo_esc = {}
+        self.ultimo_tiempo = datetime.datetime.now()
         
     def activar(self):
         '''
         Inicializa en 0 todos los valores de escritura de la placa.
         '''
-        for s in self.variables_escritura:
-            self.ultimo_esc[s]=0
+        for key in self.variables_escritura:
+            self.ultimo_esc[key] = 0
              
-    def set_fuentes(self, lista):
+    def set_fuentes(self, lista: str):
         '''
-        Asignar nombres externos de las fuentes que controla la placa.
+        Asignar nombres locales (a nivel soft de control) de las fuentes que controla la placa.
+        lista: String con nombre de la fuente a agregar.
         '''
         self.lista_fuentes.add(lista)
         
-    def set_variables_lectura(self, lista_variables):
+    def set_variables_lectura(self, lista_variables: dict):
         '''
-        asignar nombres externos a las variables que lee la placa.
+        Mapea los nombres locales para la lectura, a los nombres del firmware
+        de la placa.
+        lista_variables: Diccionario con el mapeo
+        i.e. Nombre local: "Nivel_200_CDO_getV" -> Nombre firmware: "rdV_F1"
+        {'Nivel_200_CUP_onoff':'encendidoF1','Nivel_200_CUP_setV':'setV_F1'}
         '''
         self.variables_lectura.update(lista_variables)
         for j in lista_variables:
             self.ultimo_lec.update({lista_variables[j]:0})
             
-    def set_variables_escritura(self, lista_variables):
+    def set_variables_escritura(self, lista_variables: dict):
         '''
-        Asignar nombres externos a las variables que escribe la placa.
+        Mapea los nombres locales para la escritura, a los nombres del firmware
+        de la placa.
+        lista_variables: Diccionario con el mapeo
+        i.e. Nombre local: "Nivel_200_CDO_setV" -> Nombre firmware: "setV_F1"
+        {'rdV_F1':'Nivel_200_CUP_getV','rdI_F1':'Nivel_200_CUP_getI'}
         '''
         self.variables_escritura.update(lista_variables)
         
-    def set_topic_esc(self, topic):
+    def set_topic_esc(self, topic: str):
         '''
-        Asignar el topic de escritura de la placa.
+        Asigna el topic de MQTT para escritura de la placa.
+        topic: String con el topic
+        i.e. "FuentesHV/N_110kV/F_110_190kV/write"
         '''
-        self.topic_esc=topic
+        self.topic_esc = topic
         
-    def set_topic_lec(self, topic):
+    def set_topic_lec(self, topic: str):
         '''
-        Asignar el topic de lectura de la placa.
+        Asigna el topic de MQTT para lectura de la placa.
+        topic: String con el topic
+        i.e. "FuentesHV/N_110kV/F_110_190kV/read"
         '''
-        self.topic_lec=topic
+        self.topic_lec = topic
 
-    def set_valores(self, valores):
+    def set_valores(self, valores: dict):
         '''
-        Crea un mensaje para mandar al broker.
+        Crea un mensaje para mandar al broker MQTT con los valores para 
+        setear en la/s fuente/s.
+        valores: Diccionario con los valores de seteo de la/s fuente/s
         '''
         mensaje = {}
-        if len(valores)!=len(self.variables_escritura):
+        if len(valores) != len(self.variables_escritura):
             print('la cantidad de valores a setear es incorrecta')
             print('se esperan', len(self.variables_escritura), 'valores')
             print('se recibieron', len(valores), 'valores')
@@ -83,13 +98,15 @@ class esp():
                     mensaje_completo=(self.topic_esc, str(mensaje))
                 else:
                     print('lista de escritura incorrecta... utilice la funcion set_variables_escritura')
-                    print('no se encontro la clave '+datos)
+                    print('no se encontro la clave ' + datos)
                     print(datos, valores[datos], 'no asignado')
             return mensaje_completo
 
     def get_valores(self, msg):
         '''
-        Lee un mensaje que le manda el broker y guarda los datos dentro de la instancia con los nombres externos.
+        Lee un mensaje que le manda el broker MQTT y guarda los datos dentro de
+        la instancia con los nombres locales.
+        valores: Diccionario con los valores de seteo de la/s fuente/s
         '''
         check = True
         ultimo = {}
