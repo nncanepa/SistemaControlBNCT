@@ -53,8 +53,8 @@ try:
 except: #crear tabla de escrituras
     s='(tiempo text,'
     for placa in placas:
-        for param_lec in placa.lista_lec:
-            s=s+placa.lista_lec[param_lec]+' text,'
+        for param_lec in placa.variables_lectura:
+            s=s+placa.variables_lectura[param_lec]+' text,'
     s=s[:-1]+')'
     print(s)
     curr.execute('CREATE TABLE escrituras '+s)

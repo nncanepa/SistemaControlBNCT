@@ -14,19 +14,25 @@ class esp():
         '''
         Inicializa la clase con la cantidad de valores necesarios para las fuentes conectadas a esta placa.
         Asi como el template de los mensajes a enviar y los topics necesarios para comunicarse mediante MQTT
+        lista_lec: Diccionario con las variables a leer de la/s fuente/s.
+        lista_esc: Diccionario con las variables a escribir en la/s fuente/s.
+        lista_fuentes: Set con las fuentes controladas por la placa.
+        ultimo_lec: Diccionario con las ultimas lecturas
+        ultimo_esc: Diccionario con los ultimos valores leidos
+        ultimo_tiempo: Hora de ultima comunicacion de la esp
         '''
-        self.lista_lec={}
-        self.lista_esc={}
+        self.variables_lectura={}
+        self.variables_escritura={}
         self.lista_fuentes=set()
-        self.ultimo_esc={}
         self.ultimo_lec={}
+        self.ultimo_esc={}
         self.ultimo_tiempo=datetime.datetime.now()
         
     def activar(self):
         '''
-        Asignar 0 a todos los valores de escritura de la placa.
+        Inicializa en 0 todos los valores de escritura de la placa.
         '''
-        for s in self.lista_esc:
+        for s in self.variables_escritura:
             self.ultimo_esc[s]=0
              
     def set_fuentes(self, lista):
@@ -39,7 +45,7 @@ class esp():
         '''
         asignar nombres externos a las variables que lee la placa.
         '''
-        self.lista_lec.update(lista_variables)
+        self.variables_lectura.update(lista_variables)
         for j in lista_variables:
             self.ultimo_lec.update({lista_variables[j]:0})
             
@@ -47,7 +53,7 @@ class esp():
         '''
         Asignar nombres externos a las variables que escribe la placa.
         '''
-        self.lista_esc.update(lista_variables)
+        self.variables_escritura.update(lista_variables)
         
     def set_topic_esc(self, topic):
         '''
@@ -59,28 +65,28 @@ class esp():
         '''
         Asignar el topic de lectura de la placa.
         '''
-        self.topic_lec=topic    
-        
+        self.topic_lec=topic
+
     def set_valores(self, valores):
         '''
         Crea un mensaje para mandar al broker.
         '''
         mensaje = {}
-        if len(valores)!=len(self.lista_esc):
+        if len(valores)!=len(self.variables_escritura):
             print('la cantidad de valores a setear es incorrecta')
-            print('se esperan', len(self.lista_esc), 'valores')
+            print('se esperan', len(self.variables_escritura), 'valores')
             print('se recibieron', len(valores), 'valores')
         else:
             for datos in valores:
-                if datos in self.lista_esc.keys():
-                    mensaje[self.lista_esc[datos]] = valores[datos]
+                if datos in self.variables_escritura.keys():
+                    mensaje[self.variables_escritura[datos]] = valores[datos]
                     mensaje_completo=(self.topic_esc, str(mensaje))
                 else:
                     print('lista de escritura incorrecta... utilice la funcion set_variables_escritura')
                     print('no se encontro la clave '+datos)
                     print(datos, valores[datos], 'no asignado')
             return mensaje_completo
-    
+
     def get_valores(self, msg):
         '''
         Lee un mensaje que le manda el broker y guarda los datos dentro de la instancia con los nombres externos.
@@ -88,15 +94,15 @@ class esp():
         check = True
         ultimo = {}
         mensaje = json.loads(msg.payload)
-        if len(mensaje) != len(self.lista_lec):
+        if len(mensaje) != len(self.variables_lectura):
             check = False
             print('la cantidad de valores leidos es incorrecta')
-            print('se esperan', len(self.lista_lec), 'valores')
-            print('se recibieron', len(mensaje), 'valores')            
+            print('se esperan', len(self.variables_lectura), 'valores')
+            print('se recibieron', len(mensaje), 'valores')
         else:
             for datos in mensaje:
-                if datos in self.lista_lec.keys():
-                    ultimo[self.lista_lec[datos]] = mensaje[datos]
+                if datos in self.variables_lectura.keys():
+                    ultimo[self.variables_lectura[datos]] = mensaje[datos]
                 else:
                     check = False
                     print('lista de lectura incorrecta... utilice la funcion set_variables_lectura')

@@ -5,10 +5,10 @@ import datetime
 ########################################### PLACA 1 ############################################
 placa_1=esp()  # placa simple
 # fuentes
-placa_1.set_fuentes('Nivel_100_ACE')   
+placa_1.set_fuentes('Nivel_100_ACE')
 # topics
 placa_1.set_topic_esc('FuentesHV/N_TIERRA/F_90kV/write')
-placa_1.set_topic_lec('FuentesHV/N_TIERRA/F_90kV/read')    
+placa_1.set_topic_lec('FuentesHV/N_TIERRA/F_90kV/read')
 # Fuente 090 kV
 placa_1.set_variables_escritura({'Nivel_100_ACE_onoff':'encendidoF1','Nivel_100_ACE_setV':'setV_F1'})
 placa_1.set_variables_lectura({'rdV_F1':'Nivel_100_ACE_getV','rdI_F1':'Nivel_100_ACE_getI'})
@@ -33,10 +33,10 @@ placa_2.activar()
 placa_3=esp() # placa doble ############### ya funciona
 # fuentes
 placa_3.set_fuentes('Nivel_200_CDO')
-placa_3.set_fuentes('Nivel_200_ACE')   
+placa_3.set_fuentes('Nivel_200_ACE')
 # topics
 placa_3.set_topic_esc('FuentesHV/N_110kV/F_110_190kV/write')
-placa_3.set_topic_lec('FuentesHV/N_110kV/F_110_190kV/read')    
+placa_3.set_topic_lec('FuentesHV/N_110kV/F_110_190kV/read')
 # Fuente 110 kV
 placa_3.set_variables_escritura({'Nivel_200_CDO_onoff':'encendidoF1','Nivel_200_CDO_setV':'setV_F1'})
 placa_3.set_variables_lectura({'rdV_F1':'Nivel_200_CDO_getV','rdI_F1':'Nivel_200_CDO_getI'})
@@ -52,7 +52,7 @@ placa_4=esp() # placa simple
 placa_4.set_fuentes('Nivel_200_CUP')
 # topics
 placa_4.set_topic_esc('FuentesHV/N_200kV/F_200kV/write')
-placa_4.set_topic_lec('FuentesHV/N_200kV/F_200kV/read')    
+placa_4.set_topic_lec('FuentesHV/N_200kV/F_200kV/read')
 # Fuente 200 kV
 placa_4.set_variables_escritura({'Nivel_200_CUP_onoff':'encendidoF1','Nivel_200_CUP_setV':'setV_F1'})
 placa_4.set_variables_lectura({'rdV_F1':'Nivel_200_CUP_getV','rdI_F1':'Nivel_200_CUP_getI'})
@@ -67,7 +67,7 @@ placa_5.set_fuentes('Nivel_300_ACE')
 placa_5.set_fuentes('Nivel_300_CUP')
 # topics
 placa_5.set_topic_esc('FuentesHV/N_200kV/F_300kV/write')
-placa_5.set_topic_lec('FuentesHV/N_200kV/F_300kV/read') 
+placa_5.set_topic_lec('FuentesHV/N_200kV/F_300kV/read')
 # General
 placa_5.set_variables_escritura({'Nivel_300_CDO_onoff':'encendido','Nivel_300_ACE_onoff':'encendido','Nivel_300_CUP_onoff':'encendido'})
 placa_5.set_variables_lectura({'rdI_total':'Nivel_300_getI'})
@@ -99,7 +99,7 @@ placa_9.set_fuentes('Nivel_SUP')
 placa_9.set_fuentes('Nivel_FAR')
 # topics
 placa_9.set_topic_esc('FuentesHV/N_Final/F_FaradayCup/write')
-placa_9.set_topic_lec('FuentesHV/N_Final/F_FaradayCup/read')    
+placa_9.set_topic_lec('FuentesHV/N_Final/F_FaradayCup/read')
 # Fuente Supresora
 placa_9.set_variables_escritura({'Nivel_SUP_onoff':'encendido','Nivel_SUP_setV':'setV_supresora'})
 placa_9.set_variables_lectura({'rdV_supresora':'Nivel_SUP_getV','rdI_supresora':'Nivel_SUP_getI'})
