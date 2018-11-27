@@ -1,19 +1,23 @@
 import json
 import datetime
 
+
 class esp():
     '''
-    Clase que representa las placas de control, ya sea con una o dos fuentes a controlar. 
-    Las placas tienen disponibles 4 lecturas analogicas de 0 a 10V, 2 escrituras analogicas (DAC)
-    de 0 a 10V y 2 reles.
-    Las lecturas se utilizan para leer el estado de las fuentes, tension y corriente.
-    Las escrituras se usan para setear el valor de tension de las fuentes.
+    Clase que representa las placas de control, ya sea con una o dos fuentes a
+    controlar. Las placas tienen disponibles 4 lecturas analogicas de 0 a 10V,
+    2 escrituras analogicas (DAC) de 0 a 10V y 2 reles.
+    Las lecturas se utilizan para leer el estado de las fuentes, 
+    tension y corriente. Las escrituras se usan para setear el valor
+    de tension de las fuentes.
     Los reles son para habilitar la salida de alta tension de cada fuente.
     '''
     def __init__(self):
         '''
-        Inicializa la clase con la cantidad de valores necesarios para las fuentes conectadas a esta placa.
-        Asi como el template de los mensajes a enviar y los topics necesarios para comunicarse mediante MQTT.
+        Inicializa la clase con la cantidad de valores necesarios
+        para las fuentes conectadas a esta placa.
+        Asi como el template de los mensajes a enviar y los topics
+        necesarios para comunicarse mediante MQTT.
         lista_lec: Diccionario con las variables a leer de la/s fuente/s.
         lista_esc: Diccionario con las variables a escribir en la/s fuente/s.
         lista_fuentes: Set con las fuentes controladas por la placa.
@@ -37,7 +41,8 @@ class esp():
              
     def set_fuentes(self, lista: str):
         '''
-        Asignar nombres locales (a nivel soft de control) de las fuentes que controla la placa.
+        Asignar nombres locales (a nivel soft de control) de las
+        fuentes que controla la placa.
         lista: String con nombre de la fuente a agregar.
         '''
         self.lista_fuentes.add(lista)
@@ -52,7 +57,7 @@ class esp():
         '''
         self.variables_lectura.update(lista_variables)
         for j in lista_variables:
-            self.ultimo_lec.update({lista_variables[j]:0})
+            self.ultimo_lec.update({lista_variables[j]: 0})
             
     def set_variables_escritura(self, lista_variables: dict):
         '''
@@ -82,7 +87,7 @@ class esp():
 
     def set_valores(self, valores: dict):
         '''
-        Crea un mensaje para mandar al broker MQTT con los valores para 
+        Crea un mensaje para mandar al broker MQTT con los valores para
         setear en la/s fuente/s.
         valores: Diccionario con los valores de seteo de la/s fuente/s
         '''
@@ -95,9 +100,10 @@ class esp():
             for datos in valores:
                 if datos in self.variables_escritura.keys():
                     mensaje[self.variables_escritura[datos]] = valores[datos]
-                    mensaje_completo=(self.topic_esc, str(mensaje))
+                    mensaje_completo = (self.topic_esc, str(mensaje))
                 else:
-                    print('lista de escritura incorrecta... utilice la funcion set_variables_escritura')
+                    print('lista de escritura incorrecta... \
+                          utilice la funcion set_variables_escritura')
                     print('no se encontro la clave ' + datos)
                     print(datos, valores[datos], 'no asignado')
             return mensaje_completo
@@ -122,7 +128,8 @@ class esp():
                     ultimo[self.variables_lectura[datos]] = mensaje[datos]
                 else:
                     check = False
-                    print('lista de lectura incorrecta... utilice la funcion set_variables_lectura')
+                    print('lista de lectura incorrecta... \
+                          utilice la funcion set_variables_lectura')
                     print('no se encontro la clave '+datos)
         if check:
             self.ultimo_lec = ultimo

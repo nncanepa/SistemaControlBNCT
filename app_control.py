@@ -1,26 +1,22 @@
 import json
 import paho.mqtt.client as mqtt
-import threading
 import websockets
-import time
 import datetime
 import sqlite3
-import os
 import asyncio
-import websockets
-from clases_esp.espClass import esp
 from clases_esp.configESP import *
 
-##################EN PLACAS VAN LAS INSTANCIAS CREADAS QUE SE QUIERAN UTILIZAR #################
+##########EN PLACAS VAN LAS INSTANCIAS CREADAS QUE SE QUIERAN UTILIZAR ########
 
-placas = [placa_1,placa_2,placa_3,placa_4,placa_5,placa_9]
+placas = [placa_1, placa_2, placa_3, placa_4, placa_5, placa_9]
 global tiempo_sms
 tiempo_sms = datetime.datetime.now()
 
-################################ CONFIGURACION BASE DE DATOS ####################################
+################### CONFIGURACION BASE DE DATOS ###############################
 # conectarse a la base de datos
 
-def insertar(que,donde):
+
+def insertar(que, donde):
     '''
     Funcion para insertar valores facilmente en la base de datos.
     '''
@@ -28,10 +24,12 @@ def insertar(que,donde):
     cursor = conn.cursor()
     columns =', '.join(que)
     placeholders = ', '.join('?' * len(que))
-    sql = 'INSERT INTO '+donde+' ({}) VALUES ({})'.format(columns, placeholders)
+    sql = 'INSERT INTO '+donde+' ({}) VALUES ({})'.format(columns,
+                                                          placeholders)
     cursor.execute(sql, tuple(que.values()))
     conn.commit()
     conn.close()
+
 
 def initTablas(placas):
     '''
@@ -41,7 +39,7 @@ def initTablas(placas):
     conn = sqlite3.connect('./base_de_datos_acelerador.db')
     curr = conn.cursor()
     curr.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    #si no tiene tablas crear tabla acelerador
+    # Si no tiene tablas crear tabla acelerador
     if not curr.fetchall(): 
         curr.execute('CREATE TABLE acelerador (fuente text,mac text)')
         h={}
@@ -51,47 +49,60 @@ def initTablas(placas):
                 h['mac']='No inplementado aun'
                 insertar(h,'acelerador')
     try:
-        #intento leer tabla escrituras si no puedo la creo
+        # Intento leer tabla escrituras si no puedo la creo
         curr.execute("SELECT * FROM escrituras;") 
     except: 
-        #crear tabla de escrituras
+        # Crear tabla de escrituras
         s='(tiempo text,'
         for placa in placas:
             for param_lec in placa.variables_lectura:
-                s=s+placa.variables_lectura[param_lec]+' text,'
-        s=s[:-1]+')'
+                s = s + placa.variables_lectura[param_lec] + ' text,'
+        s = s[:-1]+')'
         print(s)
-        curr.execute('CREATE TABLE escrituras '+s)
+        curr.execute('CREATE TABLE escrituras ' + s)
     finally:
         conn.commit()
         conn.close()
 
 # Inicializo la base de datos.
+
+
 initTablas(placas)
-############################# FIN CONFIGURACION BASE DE DATOS ####################################
+
+################## FIN CONFIGURACION BASE DE DATOS ############################
+
 
 def escritura_db():
     '''
     Esta funcion es llamada por el on_message del mqtt para guardar los datos.
     Escribe en la base de datos cuando recibo algun mensaje de una placa.
     '''
-    dic_vals={'tiempo':str(datetime.datetime.now().isoformat())}
-    sdic_vals={}
+    dic_vals = {'tiempo': str(datetime.datetime.now().isoformat())}
+    sdic_vals = {}
     # Leo los ultimos valores de las placas y creo un diccionario
     for placa in placas:
         dic_vals.update(placa.ultimo_lec)
     # Convierto los valores a string
     for j in dic_vals:
-        sdic_vals.update({j:str(dic_vals[j])})
+        sdic_vals.update({j: str(dic_vals[j])})
     # Inserto los valores en la base de datos
-    insertar(sdic_vals,'escrituras')
-######################################################################################
+    insertar(sdic_vals, 'escrituras')
+###############################################################################
     
-###################### escrutura clasica del websocket ###############################
-STATE = {'fuente':'','accion':'','valorv': 0,'valort': 0,'encendido':False}
+###################### escrutura clasica del websocket ########################
+
+
+STATE = {'fuente': '',
+         'accion': '',
+         'valorv': 0,
+         'valort': 0,
+         'encendido': False}
+
 USERS = set()
 
 # Modificada para mandar el estado actual
+
+
 async def register(websocket):
     USERS.add(websocket)
     # Cuando un usuario se conecta le envia la info de las placas
@@ -106,43 +117,49 @@ async def register(websocket):
                 STATE['encendido'] = placa.ultimo_esc[f+'_onoff']
             except:
                 pass
-            STATE['accion']  = 'set'
+            STATE['accion'] = 'set'
             await notify_state()
     await notify_users()
+
 
 def users_event():
     return json.dumps({'type': 'users', 'count': len(USERS)})
 
+
 def state_event():
     return json.dumps({'type': 'state', **STATE})
+
 
 async def notify_state():
     # asyncio.wait doesn't accept an empty list
     if USERS:
         message = state_event()
         await asyncio.wait([user.send(message) for user in USERS])
-        
+
+
 async def notify_users():
     # asyncio.wait doesn't accept an empty list
     if USERS:
         message = users_event()
         await asyncio.wait([user.send(message) for user in USERS])
-        
+
+
 async def unregister(websocket):
     USERS.remove(websocket)
     await notify_users()    
-#######################################################################################
+###############################################################################
 
-######################## ##hilo principal del websocket ###############################
+######################## ##hilo principal del websocket #######################
 # Aca esta el codigo que interpreta los mensajes de la pagina
+
+
 async def hilo_del_ws(websocket, path):
     await register(websocket)
     try:
         # Wspero mensajes de la pagina
         async for message in websocket:
             # recibo mensaje de la pagina
-            sms=json.loads(message)
-            
+            sms = json.loads(message)
             if sms['accion'] == 'actualizar':
                 for placa in placas:
                     # Creo el mensaje para la placa
@@ -217,14 +234,14 @@ mqttc.on_message = on_message
 for placa in placas:
     mqttc.subscribe(placa.topic_lec, 0)
 mqttc.loop_start()
-#############################################################################################
+###############################################################################
 
-################################## definicion del websoket ##################################        
+################################## definicion del websoket ####################
 start_server = websockets.serve(hilo_del_ws, 'localhost', 6600)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
-#############################################################################################
-#############################################################################################
-#############################################  FIN  #########################################
-#############################################################################################
-#############################################################################################
+###############################################################################
+###############################################################################
+#############################################  FIN  ###########################
+###############################################################################
+###############################################################################

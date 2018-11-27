@@ -5,7 +5,7 @@ import sqlite3
 
 ## Se crea conexion a la base de datos
 conn = sqlite3.connect('./base_de_datos_acelerador.db')
-c=conn.cursor()
+c = conn.cursor()
 # Estado actual de cada fuente
 STATE = {}
 # Set de usuarios conectados a la interfaz
@@ -33,7 +33,7 @@ def consulta_db():
         except:
             datos_lista_nombres = ''
             print("no hay fuentes")       
-        dic_datos = dict(zip(nombres,datos_lista_nombres))
+        dic_datos = dict(zip(nombres, datos_lista_nombres))
     except:
         print("entro al except")
         dic_datos = {}
@@ -54,6 +54,7 @@ def users_event():
     '''
     return json.dumps({'type': 'users', 'count': len(USERS)})
 
+
 async def notify_state():
     '''
     Notifica a todos los usuarios conectados sobre el estado actual
@@ -62,6 +63,7 @@ async def notify_state():
     if USERS:       # asyncio.wait doesn't accept an empty list
         message = state_event()
         await asyncio.wait([user.send(message) for user in USERS])
+
 
 async def notify_users():
     '''
@@ -72,6 +74,7 @@ async def notify_users():
         message = users_event()
         await asyncio.wait([user.send(message) for user in USERS])
 
+
 async def register(websocket):
     '''
     Agrega al usuario recien conectado a la lista
@@ -80,12 +83,14 @@ async def register(websocket):
     USERS.add(websocket)
     await notify_users()
 
+
 async def unregister(websocket):
     '''
     Quita un usuario de la lista de usuarios registrados.
     '''
     USERS.remove(websocket)
     await notify_users()
+
 
 async def counter(websocket, path):
     await register(websocket)
@@ -98,5 +103,5 @@ async def counter(websocket, path):
         await unregister(websocket)
 
 # Largamos el el loop principal de asyncio
-a=asyncio.get_event_loop().run_until_complete(websockets.serve(counter, 'localhost', 4000))
+a = asyncio.get_event_loop().run_until_complete(websockets.serve(counter, 'localhost', 4000))
 asyncio.get_event_loop().run_forever()
