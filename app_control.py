@@ -4,7 +4,7 @@ import websockets
 import datetime
 import sqlite3
 import asyncio
-from clases_esp.configESP import *
+from clases_esp.configESP import placa_1, placa_2, placa_3, placa_4, placa_5, placa_9
 
 ##########EN PLACAS VAN LAS INSTANCIAS CREADAS QUE SE QUIERAN UTILIZAR ########
 
@@ -225,9 +225,9 @@ def on_message(mqttc, obj, msg):
     if tiempo_sms < tiempo_comparar:
         tiempo_sms = datetime.datetime.now()
         escritura_db()
- 
-    
-server = "192.168.1.100"
+
+
+server = "192.168.44.225"
 mqttc = mqtt.Client()
 mqttc.connect(server, 1883, 60)
 mqttc.on_message = on_message
