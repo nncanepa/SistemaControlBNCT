@@ -1,33 +1,205 @@
 
 <html>
-<head>
-	<script src="./js/SQL.js"></script>
-	<script type="text/javascript">
-		var objConnection = new ActiveXObject("adodb.connection");
-		function fetchDataFromSQLiteDB() {
-	    //used http://sqlitebrowser.org/ for creating database
-	    var conn = SQL.connect( { Driver: "SQLite", Database: "./base_de_datos_acelerador.db"} );
-	 
-	    var result = conn.query("SELECT * FROM acelerador;");
-	    if(result.isValid == false) {
-	        test.log("Result is not valid, maybe no entries in database?")
-	    } else {
-	        while (result.isValid) {
-	            // do something with the result
-	            var id = result.value(0)
-	            var forename = result.value(1)
-	            var surname = result.value(2)
-	            var email = result.value(3)
-	            var phone = result.value(4)
-	            //test.log(id + forename + surname + email + phone)
-	            addEntry(forename, surname, email, phone)
-	            result.toNext();
-	        }
-	    test.log("added " + id + " entries in the addressbook application")
-	 }
+<style type="text/css">
+button{display: block;
+min-width: 250px;}
+
+input {
+  flex: 1 0 0;
+  min-width: 250; // they can be 0 size
+  margin: 0;
+  padding: 0;
+}
+
+</style>
+<body>
+	<section>
+	<table>
+	<tr>
+	<th>
+	<button id="recargar" onclick="recargar()">Recargar</button>
+	<div id='frame_archivos'></div>
+	<div id='frame_variables'></div>
+	</th>
+	</tr>
+	</table>
+
+<div class="range">
+  <input id='rango_doble' type="range" multiple value="0,100"></input>
+</div>
+<script src="./js/multirange.js"></script>
+<link href="./css/multirange.css" rel="stylesheet" type="text/css" />
+</section>
+<aside>
+<table>
+	<th id='graficos'>
+		<div id='frame_graficos'></div>
+	</th>
+</table>
+</aside>
+</body>
+<script type="text/javascript" src="./js/Chart.min.js"></script>
+<script type="text/javascript">
+	ws = new WebSocket("ws://127.0.0.1:4200")
+	var archivo_select=''
+	var variable_select=''
+	ws.onmessage = function (event) {
+		var data = JSON.parse(event.data);
+		if(data.archivos && data.archivos!=''){
+			localStorage.setItem("archivos",JSON.stringify(data.archivos))
+			var frame = document.getElementById("frame_archivos");
+			for (var i = 0; i < data.archivos.length; i++) {
+				if (!document.getElementById("boton_archivos"+data.archivos[i])){
+					var button = document.createElement("button");
+					button.id="boton_archivos"+data.archivos[i];
+					button.innerHTML = data.archivos[i];
+					frame.appendChild(button);
+					button.addEventListener ("click", function() {
+				    mensaje_archivos(this.innerHTML);});
+				}
+			}
+		}
+		if(data.variables && data.variables!=''){
+			localStorage.setItem("variables",JSON.stringify(data.variables))
+			var frame = document.getElementById("frame_variables");
+			for (var i = 0; i < data.variables.length; i++) {
+				if (!document.getElementById("boton_variables"+data.variables[i])){
+					var button = document.createElement("button");
+					button.id="boton_variables"+data.variables[i];
+					button.innerHTML = data.variables[i];
+					frame.appendChild(button);
+					button.addEventListener ("click", function() {
+				    mensaje_nombre(this.innerHTML);});
+				}
+				
+			}
+		}
+		// console.log(event)
+		if(data.type=='resultados'){
+			var nombre=data.variable
+			var datos=data.datos
+			graficar(nombre,datos)
+		}
 	}
-	</script>
-	<body>	 
-		<button onclick="fetchDataFromSQLiteDB()">apretar</button>
-	</body>
+	
+	function mensaje_archivos(id_boton){
+		archivos=JSON.parse(localStorage.getItem("archivos"))
+		var frame = document.getElementById("frame_archivos");
+		for (var i = 0; i < archivos.length; i++) {
+			if (archivos[i]!=id_boton){
+				try{frame.removeChild(document.getElementById("boton_archivos"+archivos[i]))}catch(error){}
+			}
+			archivo_select=id_boton
+			document.getElementById("boton_archivos"+id_boton).style='color:#ffcc00;'
+		}
+		sms={}
+		sms.archivo=archivo_select
+		ws.send(JSON.stringify(sms));
+		document.getElementById("recargar").innerHTML="< Volver"
+	}
+	function mensaje_nombre(id_boton){
+		
+		variables=JSON.parse(localStorage.getItem("variables"))
+		var frame = document.getElementById("frame_variables");
+		
+		variable_select=id_boton
+		if (id_boton!=''){
+			sms={}
+			sms.archivo=archivo_select
+			sms.variable=variable_select
+			ws.send(JSON.stringify(sms));
+		}
+		
+	}
+	function recargar(){
+		// document.getElementById("recargar").innerHTML="< Volver"
+		localStorage.setItem("archivos",JSON.stringify(''))
+		localStorage.setItem("variables",JSON.stringify(''))
+		location.reload();
+	}
+
+</script>
+<style type="text/css">
+	button{
+	width: 50px;
+	height: 25px;
+	font-family: "Impact";
+	padding: 0px 0px;
+	
+	/*display: inline-block;*/
+	color: #ff9900; /*color texto*/
+	color: #CC6600;
+
+	cursor: pointer;
+	background: #000;
+	background: #111111;
+	border: 1px solid #222222;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 8px;
+	-o-border-radius: 4px;
+	box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	-moz-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	-o-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+	cursor: pointer;
+	border: 1px solid #0B180F;
+	-webkit-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.8), inset 1px 1px 0px 0px rgba(255, 255, 255, 0.25);
+}
+	button:focus {outline:0;}
+	button:hover {
+   		border-top-color: #041724;
+   		background: #041724;
+   		color: #ffcc00;
+   	}
+	body{background-color: #333333;}
+	canvas{background-color: #cccccc;}
+	canvas{
+		width: 160px;
+		height: 140px;
+	}
+</style>
+<script>
+function graficar(nombre,datos){
+	removeElement('frame_graficos')
+	var grafico = document.createElement("canvas");
+	var ctx = grafico.getContext('2d');
+	var n_label=[]
+	datos_char=[]
+	smooth=Number((1+datos.length/1000).toFixed(0))
+	a=Number((document.getElementById("rango_doble").valueLow*datos.length/100.0).toFixed(0));
+	console.log(a)
+	b=Number((document.getElementById("rango_doble").valueHigh*datos.length/100.0).toFixed(0));
+	console.log(b)
+	for (var i = a; i < b; i=i+smooth) {
+		n_label[i]=((i+smooth/2)/120).toFixed(0)
+		s_dat=0
+		for (var k = i; k < i+smooth; k++) {
+			s_dat=s_dat+Number(datos[k])
+		}
+		datos_char[i]={x:(i/120).toFixed(2),y:(s_dat/smooth).toFixed(3)}
+	}
+	var myChart = new Chart(ctx, {
+    type: 'scatter',
+    data: {datasets: [{label: nombre,borderColor:'#444444',backgroundColor:'#ee4444',data: datos_char}]    },
+    responsive: false,
+    width:500,	
+    height:100,
+    maintainAspectRatio: false,
+    options: {scales: {xAxes: [{type: 'linear',position: 'bottom'}]}}
+	});
+	var frame = document.createElement("div");
+	frame.id='frame_graficos'
+	frame.style="position:absolute; top:10px; left:300px; width:700px; height:200px;"
+	div_graf=document.getElementById('graficos')
+	frame.appendChild(grafico);
+	div_graf.appendChild(frame);
+}
+function removeElement(elementId) {
+    // Removes an element from the document
+    var element = document.getElementById(elementId);
+    element.parentNode.removeChild(element);
+}
+ws.onclose = function (event) {document.getElementById("recargar").style="color: #cccccc;background: #ff1111;";}
+</script>
 </html>

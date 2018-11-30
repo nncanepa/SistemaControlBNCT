@@ -4,6 +4,7 @@ import websockets
 import datetime
 import sqlite3
 import asyncio
+import threading
 from clases_esp.configESP import placa_1, placa_2, placa_3, placa_4, placa_5, placa_9
 
 ##########EN PLACAS VAN LAS INSTANCIAS CREADAS QUE SE QUIERAN UTILIZAR ########
@@ -235,7 +236,26 @@ for placa in placas:
     mqttc.subscribe(placa.topic_lec, 0)
 mqttc.loop_start()
 ###############################################################################
+#############################################################################################
+import webbrowser, os
+def iniciar_lecturas_continuo():
+    os.system('web_backend.py')
+def iniciar_lecturas_db():
+    os.system('web_db.py')
 
+filename='./html/interfaz_db.html'
+webbrowser.open('file://' + os.path.realpath(filename))
+
+filename='./html/panel_de_control_web.html'
+webbrowser.open('file://' + os.path.realpath(filename))
+
+t2=threading.Thread(target=iniciar_lecturas_continuo)
+t2.daemon = True
+t2.start()
+
+t3=threading.Thread(target=iniciar_lecturas_db)
+t3.daemon = True
+t3.start()   
 ################################## definicion del websoket ####################
 start_server = websockets.serve(hilo_del_ws, 'localhost', 6600)
 asyncio.get_event_loop().run_until_complete(start_server)
