@@ -28,11 +28,11 @@ def consulta_db():
         
         # consulto ultimas tensiones cuadrupolos de arriba
         try:
-            c.execute("SELECT " + lista_nombres + " FROM escrituras WHERE _rowid_ = (SELECT MAX(_rowid_)  FROM escrituras);")
+            c.execute("SELECT " + lista_nombres + " FROM escrituras WHERE _rowid_ = (SELECT MAX(_rowid_) FROM escrituras);")
             datos_lista_nombres = c.fetchone()
         except:
             datos_lista_nombres = ''
-            print("no hay fuentes")       
+            print("no hay fuentes")
         dic_datos = dict(zip(nombres, datos_lista_nombres))
     except:
         print("entro al except")

@@ -23,7 +23,7 @@ def insertar(que, donde):
     '''
     conn = sqlite3.connect('./base_de_datos_acelerador.db')
     cursor = conn.cursor()
-    columns =', '.join(que)
+    columns = ', '.join(que)
     placeholders = ', '.join('?' * len(que))
     sql = 'INSERT INTO '+donde+' ({}) VALUES ({})'.format(columns,
                                                           placeholders)
