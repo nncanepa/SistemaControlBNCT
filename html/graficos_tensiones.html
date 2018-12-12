@@ -22,7 +22,7 @@
     font-size: 14px;
     display: block;
       text-align: center;
-      width: 55px;
+      width: 45px;
       color: #ffdd00; /*color numeros*/
   }
 .total{
@@ -86,12 +86,13 @@
         <table id="Tension_CDO">
           <tbody>
               <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_CDO"><details><summary>Cuadrupolos Abajo</summary>Niveles: SUP 200 300 400 500 600 </details></label></td></tr>
-              <td ><label class="valor" id="Valor_Nivel_SUP">--</label></td>
+              <td ><label class="valor" id="Valor_Nivel_030_ACE">--</label></td>
               <td ><label class="valor" id="Valor_Nivel_200_CDO">--</label></td>
               <td ><label class="valor" id="Valor_Nivel_300_CDO">--</label></td>
               <td ><label class="valor" id="Valor_Nivel_400_CDO">--</label></td>
               <td ><label class="valor" id="Valor_Nivel_500_CDO">--</label></td>
               <td ><label class="valor" id="Valor_Nivel_600_CDO">--</label></td>
+              <td ><label class="valor" id="Valor_Nivel_SUP">--</label></td>
           </tbody>
         </table>
         <canvas id="mycanvas_CDO" width="374" height="120"></canvas>
@@ -219,15 +220,22 @@
   smoothie.streamTo(document.getElementById("mycanvas_CDO"), 500);    
   
   ws.onmessage = function (event) {
-    var nombre_fuentes=["Nivel_SUP_getV","Nivel_100_CUP_getV","Nivel_200_CUP_getV","Nivel_300_CUP_getV","Nivel_400_CUP_getV","Nivel_500_CUP_getV","Nivel_600_CUP_getV",
-        "Nivel_200_CDO_getV","Nivel_300_CDO_getV","Nivel_400_CDO_getV","Nivel_500_CDO_getV","Nivel_600_CDO_getV",
-        "Nivel_100_ACE_getV","Nivel_200_ACE_getV","Nivel_300_ACE_getV","Nivel_400_ACE_getV","Nivel_500_ACE_getV","Nivel_600_ACE_getV"]
+    var nombre_fuentes=[
+    "Nivel_SUP_getV"    ,"Nivel_100_ACE_getV","Nivel_100_CUP_getV",
+    "Nivel_200_CDO_getV","Nivel_200_CUP_getV","Nivel_200_ACE_getV",
+    "Nivel_300_CDO_getV","Nivel_300_ACE_getV","Nivel_300_CUP_getV",
+    "Nivel_400_CDO_getV","Nivel_400_ACE_getV","Nivel_400_CUP_getV",
+    "Nivel_500_CDO_getV","Nivel_500_ACE_getV","Nivel_500_CUP_getV",
+    "Nivel_600_CDO_getV","Nivel_600_ACE_getV","Nivel_600_CUP_getV",    ,
+    "Nivel_030_ACE_getV"]
+    
     var data = JSON.parse(event.data);
     var v_tot=0
     for (var i = 0; i < nombre_fuentes.length; i++) {
       if (nombre_fuentes[i] in data){
         if (data[nombre_fuentes[i]]=='error'){
           document.getElementById(('Valor_'+nombre_fuentes[i]).slice(0,-5)).style.color='#ff0000';
+          data[nombre_fuentes[i]]="0"
         }else{
           document.getElementById(('Valor_'+nombre_fuentes[i]).slice(0,-5)).style.color='#ffdd00';
           v_tot=v_tot+Number(data[nombre_fuentes[i]])
@@ -278,6 +286,7 @@
         line4_CDO.append(new Date().getTime(), Number(data.Nivel_400_CDO_getV));
         line5_CDO.append(new Date().getTime(), Number(data.Nivel_500_CDO_getV));
         line6_CDO.append(new Date().getTime(), Number(data.Nivel_600_CDO_getV));
+        try{document.getElementById('Valor_Nivel_030_ACE').innerHTML=Number(data.Nivel_030_ACE_getV).toFixed(1) + ' kV';}catch(error){}
         try{document.getElementById('Valor_Nivel_SUP').innerHTML=Number(data.Nivel_SUP_getV).toFixed(1) + ' kV';}catch(error){}
         try{document.getElementById('Valor_Nivel_200_CDO').innerHTML=Number(data.Nivel_200_CDO_getV).toFixed(1) + ' kV';}catch(error){}
         try{document.getElementById('Valor_Nivel_300_CDO').innerHTML=Number(data.Nivel_300_CDO_getV).toFixed(1) + ' kV';}catch(error){}

@@ -5,11 +5,11 @@ import datetime
 import sqlite3
 import asyncio
 import threading
-from clases_esp.configESP import placa_1, placa_2, placa_3, placa_4, placa_5, placa_9
+from clases_esp.configESP import placa_0, placa_1, placa_2, placa_3, placa_4, placa_5, placa_6, placa_7, placa_8, placa_9
 
 ##########EN PLACAS VAN LAS INSTANCIAS CREADAS QUE SE QUIERAN UTILIZAR ########
 
-placas = [placa_1, placa_2, placa_3, placa_4, placa_5, placa_9]
+placas = [placa_0, placa_1, placa_2, placa_3, placa_4, placa_5, placa_6, placa_7, placa_8, placa_9]
 global tiempo_sms
 tiempo_sms = datetime.datetime.now()
 
@@ -23,7 +23,7 @@ def insertar(que, donde):
     '''
     conn = sqlite3.connect('./base_de_datos_acelerador.db')
     cursor = conn.cursor()
-    columns = ', '.join(que)
+    columns =', '.join(que)
     placeholders = ', '.join('?' * len(que))
     sql = 'INSERT INTO '+donde+' ({}) VALUES ({})'.format(columns,
                                                           placeholders)
@@ -57,7 +57,10 @@ def initTablas(placas):
         s='(tiempo text,'
         for placa in placas:
             for param_lec in placa.variables_lectura:
-                s = s + placa.variables_lectura[param_lec] + ' text,'
+                # s = s + placa.variables_lectura[param_lec] + ' text,'
+                s = s + param_lec + ' text,'
+            for param_esc in placa.variables_escritura.keys():
+                s = s + param_esc + ' text,'
         s = s[:-1]+')'
         print(s)
         curr.execute('CREATE TABLE escrituras ' + s)
@@ -83,10 +86,12 @@ def escritura_db():
     # Leo los ultimos valores de las placas y creo un diccionario
     for placa in placas:
         dic_vals.update(placa.ultimo_lec)
+        dic_vals.update(placa.ultimo_esc)
     # Convierto los valores a string
     for j in dic_vals:
         sdic_vals.update({j: str(dic_vals[j])})
     # Inserto los valores en la base de datos
+    
     insertar(sdic_vals, 'escrituras')
 ###############################################################################
     
@@ -115,7 +120,7 @@ async def register(websocket):
             except:
                 pass
             try:
-                STATE['encendido'] = placa.ultimo_esc[f+'_onoff']
+                STATE['encendido'] = placa.ultimo_esc[f+'_setO']
             except:
                 pass
             STATE['accion'] = 'set'
@@ -165,6 +170,7 @@ async def hilo_del_ws(websocket, path):
                 for placa in placas:
                     # Creo el mensaje para la placa
                     sms_topic, sms_txt = placa.set_valores(placa.ultimo_esc)
+                    
                     # Publico el mensaje en el broker mqtt
                     mqttc.publish(sms_topic, sms_txt)
             else:
@@ -179,12 +185,12 @@ async def hilo_del_ws(websocket, path):
                     placa_select.ultimo_esc[sms['fuente'] + '_setV'] += sms['paso']
                 # eEto cambia el estado de la fuente entre prendido y apagado
                 if sms['accion']=='cambiar':
-                    placa_select.ultimo_esc[sms['fuente'] + '_onoff'] = \
-                                            round(1 - placa_select.ultimo_esc[sms['fuente'] + '_onoff'])
+                    placa_select.ultimo_esc[sms['fuente'] + '_setO'] = \
+                                            round(1 - placa_select.ultimo_esc[sms['fuente'] + '_setO'])
                 
                 # falta implementar rampas
                 #if sms['accion']=='rampa':
-                    #placa_select.ultimo_esc[sms['fuente']+'_onoff']+=round(1-placa_select.ultimo_esc[sms['fuente']+'_onoff'])
+                    #placa_select.ultimo_esc[sms['fuente']+'_setO']+=round(1-placa_select.ultimo_esc[sms['fuente']+'_setO'])
 
                 # Directamente manda el valor enviado por la pagina a la placa
                 if sms['accion'] == 'setear':
@@ -193,14 +199,14 @@ async def hilo_del_ws(websocket, path):
                 # Envio a la pagina los valores actualizados de la fuente que se modificaron
                 STATE['fuente'] = sms['fuente']
                 STATE['valorv'] = placa_select.ultimo_esc[sms['fuente'] + '_setV']
-                STATE['encendido']=placa_select.ultimo_esc[sms['fuente'] + '_onoff']
+                STATE['encendido']=placa_select.ultimo_esc[sms['fuente'] + '_setO']
                 # Esto le indica a la pagina que debe actualizar los valores
                 STATE['accion'] = 'set'
                 # Creo el mensaje para la placa
                 sms_topic, sms_txt = placa_select.set_valores(placa_select.ultimo_esc)
                 # Publico el mensaje en el broker mqtt
                 mqttc.publish(sms_topic, sms_txt)
-                print(placa_select.ultimo_lec)
+                
             await notify_state()
     finally:
         await unregister(websocket)
@@ -210,22 +216,23 @@ async def hilo_del_ws(websocket, path):
 ########################## comunicacion con el broker mqtt ##################################
 def on_message(mqttc, obj, msg):
     global tiempo_sms
-    tiempo_comparar = datetime.datetime.now()-datetime.timedelta(seconds=5)
+    tiempo_comparar = datetime.datetime.now()-datetime.timedelta(seconds=1.5)
     
-    for placa in placas:
-        if placa.ultimo_tiempo < tiempo_comparar:
-            for  v in placa.ultimo_lec.keys():
+    for placa in placas: # para todas las placas
+        if placa.ultimo_tiempo < tiempo_comparar: # veo si hace mas de 1.5 seg no recibe mensajes
+            for  v in placa.ultimo_lec.keys(): # escribo error como ultimo valor leido
                 placa.ultimo_lec[v] = 'error'
             
-        if msg.topic in placa.topic_lec:
+        if msg.topic in placa.topic_lec: # si el topic es de la placa defino que voy a actuar sobre ella
             placa_select = placa
-            placa_select.ultimo_tiempo = datetime.datetime.now()
+            placa_select.ultimo_tiempo = datetime.datetime.now() # actualizo el tiempo del ultimo mensaje recibido
         
-    placa_select.get_valores(msg)
-    tiempo_comparar = datetime.datetime.now() - datetime.timedelta(seconds = .2)
-    if tiempo_sms < tiempo_comparar:
+
+    placa_select.get_valores(msg) # obtengo los valores
+    tiempo_comparar = datetime.datetime.now() - datetime.timedelta(seconds = .1)
+    if tiempo_sms < tiempo_comparar: # si paso mas de .1 seg desde la ultima escritura a la base de datos 
         tiempo_sms = datetime.datetime.now()
-        escritura_db()
+        escritura_db() # escribo en la base de datos
 
 
 server = "192.168.44.225"
@@ -235,6 +242,7 @@ mqttc.on_message = on_message
 for placa in placas:
     mqttc.subscribe(placa.topic_lec, 0)
 mqttc.loop_start()
+print("mqtt activo")
 ###############################################################################
 #############################################################################################
 import webbrowser, os

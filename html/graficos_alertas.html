@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<style type="text/css">
+  table{
+    background-color: #333333;
+    border: 1px solid black;
+  }
+
+.titulo{
+    font-family: "Courier";
+    
+    font-size: 14px;
+      text-align: center;
+      display: block;
+      color: #aaaaaa; /*color numeros*/
+      background-color:#000000;
+      width: 500px;
+  }
+    
+    .valor{
+    font-family: "Impact";
+    font-size: 14px;
+    display: block;
+      text-align: center;
+      width: 45px;
+      color: #ffdd00; /*color numeros*/
+  }
+.total{
+    font-family: "Impact";
+    font-size: 16px;
+    display: block;
+      text-align: center;
+      width: 100px;
+      color: #ff9900; /*color numeros*/
+  }
+
+
+  #Valor_Nivel_Total,#Valor_Corriente,#Valor_Potencia{
+    font-family: "Impact";
+    font-size: 22px;
+    display: block;
+      text-align: center;
+      width: 150px;
+      color: #ffdd00; /*color numeros*/
+  }
+
+  
+  #titulo_nivel,#titulo_total{
+    font-family: "Courier";
+    
+    font-size: 14px;
+      text-align: center;
+      display: block;
+      color: #aaaaaa; /*color numeros*/
+      background-color:#000000;
+      /*width: 140px;*/
+  }
+  
+  table{
+    background-color: #333333;
+    border: 1px solid black;
+  }
+  
+  body{background-color: #333333;
+  }
+  
+  table{
+    background-color: #282828;
+    border: 1px solid black;
+  }
+  #tabla_fuente_normal,#tabla_medicion_normal{background-color: #337333;}
+  #tabla_fuente_error,#tabla_medidion_error{background-color: #933333;}
+
+.cerrado {
+  background-color: #992211;
+  width: 55px;
+  height: 25px;
+  color: #ff0055;
+  cursor: pointer;
+  /*display: inline-block;*/
+  font-family: "Impact";
+  font-size: 15px;
+  padding: 0px 0px;
+  border: 1px solid #33330F;
+  border-radius: 6px;
+  -webkit-animation: glowing 800ms infinite;
+  -moz-animation: glowing 800ms infinite;
+  -o-animation: glowing 800ms infinite;
+  animation: glowing 800ms infinite;
+}
+.oculto {
+  display: none;
+}
+
+
+.abierto {
+  background-color: #229911;
+  width: 55px;
+  height: 25px;
+  color: #005522;
+  cursor: pointer;
+  /*display: inline-block;*/
+  font-family: "Impact";
+  font-size: 15px;
+  padding: 0px 0px;
+  border: 1px solid #33330F;
+  border-radius: 6px;
+}
+
+@-webkit-keyframes glowing {
+  0% { background-color: #880000; -webkit-box-shadow: 0 0 3px #880000; }
+  50% { background-color: #aa0000; -webkit-box-shadow: 0 0 40px #aa0000; }
+  100% { background-color: #880000; -webkit-box-shadow: 0 0 3px #880000; }
+}
+
+@-moz-keyframes glowing {
+  0% { background-color: #880000; -moz-box-shadow: 0 0 23px #880000; }
+  50% { background-color: #aa0000; -moz-box-shadow: 0 0 40px #aa0000; }
+  100% { background-color: #880000; -moz-box-shadow: 0 0 23px #880000; }
+}
+
+@-o-keyframes glowing {
+  0% { background-color: #880000; box-shadow: 0 0 23px #880000; }
+  50% { background-color: #aa0000; box-shadow: 0 0 40px #aa0000; }
+  100% { background-color: #880000; box-shadow: 0 0 23px #880000; }
+}
+
+@keyframes glowing {
+  0% { background-color: #880000; box-shadow: 0 0 23px #880000; }
+  50% { background-color: #aa0000; box-shadow: 0 0 40px #aa0000; }
+  100% { background-color: #880000; box-shadow: 0 0 23px #880000; }
+}
+
+.texto {
+  background-color: #332211;
+  width: 55px;
+  height: 25px;
+  color: #77CCCC;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Impact";
+  font-size: 10px;
+  padding: 0px 0px;
+  border: 1px solid #33330F;
+  border-radius: 0px;
+}
+
+  body{background-color: #333333;}
+</style>
+
+<html>
+  
+<!-- <script type="text/javascript" src="./js/smoothie.js"></script> -->
+
+  <body>
+    <table id=tabla_medicion_normal>
+      <tbody>
+      <tr>
+     <td>
+        <table id="Tension_CUP">
+          <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_CUP"><details><summary>Cuadrupolos Arriba</summary>Niveles: 100 200 300 400 500 600 </details></label></td></tr>
+          <tr>
+          <td ><label class="valor"><button class="texto" id="Texto_Nivel_100_CUP" onclick="visible(event)">Nivel_100</button></label></td>
+          <td ><label class="valor"><button class="texto" id="Texto_Nivel_200_CUP" onclick="visible(event)">Nivel_200</button></label></td>
+          <td ><label class="valor"><button class="texto" id="Texto_Nivel_300_CUP" onclick="visible(event)">Nivel_300</button></label></td>
+          <td ><label class="valor"><button class="texto" id="Texto_Nivel_400_CUP" onclick="visible(event)">Nivel_400</button></label></td>
+          <td ><label class="valor"><button class="texto" id="Texto_Nivel_500_CUP" onclick="visible(event)">Nivel_500</button></label></td>
+          <td ><label class="valor"><button class="texto" id="Texto_Nivel_600_CUP" onclick="visible(event)">Nivel_600</button></label></td>
+          </tr>
+          <tr>
+          <td ><label class="valor"><button class='cerrado' id="Valor_Nivel_100_CUP"></button></label></td>
+          <td ><label class="valor"><button id="Valor_Nivel_200_CUP"></button></label></td>
+          <td ><label class="valor"><button id="Valor_Nivel_300_CUP"></button></label></td>
+          <td ><label class="valor"><button id="Valor_Nivel_400_CUP"></button></label></td>
+          <td ><label class="valor"><button id="Valor_Nivel_500_CUP"></button></label></td>
+          <td ><label class="valor"><button id="Valor_Nivel_600_CUP"></button></label></td>
+          </tr>
+        </table>
+      </td>
+      </tr>
+
+      <tr>
+      <td>
+        <table id="Tension_ACE">
+          <tbody>
+            <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_ACE"><details><summary>Aceleración</summary>Niveles: -30 100 200 300 400 500 600 </details></label></td></tr>
+            <tr>
+            <td ><label class="valor"><button class="texto" id="Texto_Nivel_030_ACE" onclick="visible(event)">Nivel_030</button></label></td>
+            <td ><label class="valor"><button class="texto" id="Texto_Nivel_100_ACE" onclick="visible(event)">Nivel_100</button></label></td>
+            <td ><label class="valor"><button class="texto" id="Texto_Nivel_200_ACE" onclick="visible(event)">Nivel_200</button></label></td>
+            <td ><label class="valor"><button class="texto" id="Texto_Nivel_300_ACE" onclick="visible(event)">Nivel_300</button></label></td>
+            <td ><label class="valor"><button class="texto" id="Texto_Nivel_400_ACE" onclick="visible(event)">Nivel_400</button></label></td>
+            <td ><label class="valor"><button class="texto" id="Texto_Nivel_500_ACE" onclick="visible(event)">Nivel_500</button></label></td>
+            <td ><label class="valor"><button class="texto" id="Texto_Nivel_600_ACE" onclick="visible(event)">Nivel_600</button></label></td>
+            </tr>
+            <tr>
+            <td ><label class="valor"><button id="Valor_Nivel_030_ACE"></button></label></td>
+            <td ><label class="valor"><button id="Valor_Nivel_100_ACE"></button></label></td>
+            <td ><label class="valor"><button id="Valor_Nivel_200_ACE"></button></label></td>
+            <td ><label class="valor"><button id="Valor_Nivel_300_ACE"></button></label></td>
+            <td ><label class="valor"><button id="Valor_Nivel_400_ACE"></button></label></td>
+            <td ><label class="valor"><button id="Valor_Nivel_500_ACE"></button></label></td>
+            <td ><label class="valor"><button id="Valor_Nivel_600_ACE"></button></label></td>
+            </tr>
+          </tbody>
+        </table>    
+     </td>
+     </tr>
+     
+      <tr>
+      <td>
+        <table id="Tension_CDO">
+          <tbody>
+              <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_CDO"><details><summary>Cuadrupolos Abajo</summary>Niveles: SUP 200 300 400 500 600 </details></label></td></tr>
+              <tr>
+              <td ><label class="valor"><button class="texto" id="Texto_Nivel_SUP" onclick="visible(event)">Nivel_SUP</button></label></td>
+              <td ><label class="valor"><button class="texto" id="Texto_Nivel_200_CDO" onclick="visible(event)">Nivel_200</button></label></td>
+              <td ><label class="valor"><button class="texto" id="Texto_Nivel_300_CDO" onclick="visible(event)">Nivel_300</button></label></td>
+              <td ><label class="valor"><button class="texto" id="Texto_Nivel_400_CDO" onclick="visible(event)">Nivel_400</button></label></td>
+              <td ><label class="valor"><button class="texto" id="Texto_Nivel_500_CDO" onclick="visible(event)">Nivel_500</button></label></td>
+              <td ><label class="valor"><button class="texto" id="Texto_Nivel_600_CDO" onclick="visible(event)">Nivel_600</button></label></td>
+              </tr>
+              <tr>
+              <td ><label class="valor"><button id="Valor_Nivel_SUP"></button></label></td>
+              <td ><label class="valor"><button id="Valor_Nivel_200_CDO"></button></label></td>
+              <td ><label class="valor"><button id="Valor_Nivel_300_CDO"></button></label></td>
+              <td ><label class="valor"><button id="Valor_Nivel_400_CDO"></button></label></td>
+              <td ><label class="valor"><button id="Valor_Nivel_500_CDO"></button></label></td>
+              <td ><label class="valor"><button id="Valor_Nivel_600_CDO"></button></label></td>
+              </tr>
+          </tbody>
+        </table>
+      </td>
+      </tr>
+      </tbody>
+    </table>
+</body>
+<script type="text/javascript">
+  ws = new WebSocket("ws://127.0.0.1:4000")
+  var p=0
+  var n_orden=1;
+  
+  function visible(event){
+    s=document.getElementById('Valor'+event.target.id.slice(5))
+    console.log(s.classList.value)
+    if(s.classList.value!='oculto'){
+      s.classList.replace('cerrado','oculto')
+    }else{s.classList.replace('oculto','cerrado')}
+    
+  }
+
+  ws.onmessage = function (event) {
+    var nombre_fuentes_getV=[
+    "Nivel_SUP_getV"    ,"Nivel_100_ACE_getV","Nivel_100_CUP_getV",
+    "Nivel_200_CDO_getV","Nivel_200_ACE_getV","Nivel_200_CUP_getV",
+    "Nivel_300_CDO_getV","Nivel_300_ACE_getV","Nivel_300_CUP_getV",
+    "Nivel_400_CDO_getV","Nivel_400_ACE_getV","Nivel_400_CUP_getV",
+    "Nivel_500_CDO_getV","Nivel_500_ACE_getV","Nivel_500_CUP_getV",
+    "Nivel_600_CDO_getV","Nivel_600_ACE_getV","Nivel_600_CUP_getV",
+    "Nivel_030_ACE_getV"]
+
+
+
+    var nombre_fuentes_setV=[
+    "Nivel_SUP_setV"    ,"Nivel_100_ACE_setV","Nivel_100_CUP_setV",
+    "Nivel_200_CDO_setV","Nivel_200_ACE_setV","Nivel_200_CUP_setV",
+    "Nivel_300_CDO_setV","Nivel_300_ACE_setV","Nivel_300_CUP_setV",
+    "Nivel_400_CDO_setV","Nivel_400_ACE_setV","Nivel_400_CUP_setV",
+    "Nivel_500_CDO_setV","Nivel_500_ACE_setV","Nivel_500_CUP_setV",
+    "Nivel_600_CDO_setV","Nivel_600_ACE_setV","Nivel_600_CUP_setV",
+    "Nivel_030_ACE_setV"]
+    var nombre_fuentes=[];
+    nombre_fuentes.push(nombre_fuentes_setV,nombre_fuentes_getV)
+
+    var nombre_Valor=[
+    "Nivel_SUP"    ,"Nivel_100_ACE","Nivel_100_CUP",
+    "Nivel_200_CDO","Nivel_200_ACE","Nivel_200_CUP",
+    "Nivel_300_CDO","Nivel_300_ACE","Nivel_300_CUP",
+    "Nivel_400_CDO","Nivel_400_ACE","Nivel_400_CUP",
+    "Nivel_500_CDO","Nivel_500_ACE","Nivel_500_CUP",
+    "Nivel_600_CDO","Nivel_600_ACE","Nivel_600_CUP",
+    "Nivel_030_ACE"]
+
+
+    var data = JSON.parse(event.data);
+    var v_tot=0
+    for (var i = 0; i < nombre_fuentes.length; i++) {
+      if (nombre_fuentes[i] in data){
+        if (data[nombre_fuentes[i]]=='error'){
+          document.getElementById(('Valor_'+nombre_fuentes[i]).slice(0,-5)).style.color='#ff0000';
+        }else{
+          document.getElementById(('Valor_'+nombre_fuentes[i]).slice(0,-5)).style.color='#ffdd00';
+          v_tot=v_tot+Number(data[nombre_fuentes[i]])
+        }
+      }else{data[nombre_fuentes[i]]="0"}
+    }
+
+    i_tot=(Number(data.Nivel_FAR_getI))
+    
+    if (data){
+        for (var i = 0; i < nombre_Valor.length; i++) {
+          if (nombre_Valor[i].search('_ACE')==-1){diferencia=0.5;}else{diferencia=5.0;}
+          a=document.getElementById('Valor_'+nombre_Valor[i]);
+          n=Number(data[nombre_Valor[i]+'_setV'])-Number(data[nombre_Valor[i]+'_getV']);
+          a.innerHTML=n.toFixed(1) + ' kV';
+        if(a.className!='oculto'){if (!isNaN(n) && Math.abs(n)<diferencia){a.className='abierto'}else{a.className='cerrado'} }
+        }
+        
+      }
+      if (data.count==1 && p==0){
+          setInterval(function timer(){
+          var sms={}
+          if (n_orden==1) {sms.corrientes='';n_orden=0}else{
+            sms.tensiones='';n_orden=1;  
+          }
+          
+              ws.send(JSON.stringify(sms));
+              },200)
+          p=1;
+
+          }
+  }
+  ws.onclose= function(event){
+    console.log('errorrorororo')
+    document.getElementById("tabla_medicion_normal").id='tabla_medidion_error';
+  }
+</script>
+</html>

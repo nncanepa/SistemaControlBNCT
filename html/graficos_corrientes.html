@@ -9,7 +9,7 @@
       display: block;
       color: #aaaaaa; /*color numeros*/
       background-color:#000000;
-      width: 553px;
+      width: 698px;
   }
     
 .valor{
@@ -40,18 +40,18 @@ table{
   <table id=tabla_medicion_normal>
     <tbody>
       <td>
-        <table id="Tension_ACE">
+        <table id="Corriente_FAR">
           <tbody>
-            <tr><td><label class="titulo" id="titulo_Tension_100_ACE"><details><summary>Corriente</summary>ESP 9 Supresora y Faraday Cup</details></label></td></tr>
+            <tr><td><label class="titulo" id="titulo_Corriente_FAR"><details><summary>Corriente</summary>ESP 9 Supresora y Faraday Cup</details></label></td></tr>
             <td><label class="valor">Medición de Corriente en la Copa de Faraday (mA)</label></td>
           </tbody>
         </table>    
-        <canvas id="mycanvas_ACE" width="560px" height="130px"></canvas>
+        <canvas id="mycanvas_FAR" width="705px" height="130px"></canvas>
      </td>
 
      <td>
-        <table id="Tension_CUP">
-          <tr><td colspan="9"><label class="titulo" id="titulo_Tension_100_CUP"><details><summary>Corrientes medias por nivel (mA)</summary>Niveles: 100 200 300 400 500 600 </details></label></td></tr>
+        <table id="Corriente_TOTAL">
+          <tr><td colspan="9"><label class="titulo" id="titulo_Corriente_TOTAL"><details><summary>Corrientes medias por nivel (mA)</summary>Niveles: 100 200 300 400 500 600 </details></label></td></tr>
           <td ><label class="valor" id="Valor_Nivel_100_CUP">--</label></td>
           <td ><label class="valor" id="Valor_Nivel_200_CUP">--</label></td>
           <td ><label class="valor" id="Valor_Nivel_300_CUP">--</label></td>
@@ -59,7 +59,7 @@ table{
           <td ><label class="valor" id="Valor_Nivel_500_CUP">--</label></td>
           <td ><label class="valor" id="Valor_Nivel_600_CUP">--</label></td>
         </table>
-        <canvas id="mycanvas_CUP" width="560px" height="130px"></canvas>   
+        <canvas id="mycanvas_TOTAL" width="705px" height="130px"></canvas>   
       </td>
     </tbody>
   </table>
@@ -68,59 +68,62 @@ table{
       ws = new WebSocket("ws://127.0.0.1:4000")
       var p=0
       var n_orden=1;
-      var line1_CUP = new TimeSeries();
-      var line2_CUP = new TimeSeries();
-      var line3_CUP = new TimeSeries();
-      var line4_CUP = new TimeSeries();
-      var line5_CUP = new TimeSeries();
-      var line6_CUP = new TimeSeries();
+      var line_100 = new TimeSeries();
+      var line_200 = new TimeSeries();
+      var line_300 = new TimeSeries();
+      var line_400 = new TimeSeries();
+      var line_500 = new TimeSeries();
+      var line_600 = new TimeSeries();
       var smoothie = new SmoothieChart({interpolation:'linear',minValue:0,millisPerPixel: 60,
       grid: { strokeStyle: 'rgb(0,80,  0)', fillStyle: 'rgb(0,30, 0)', lineWidth: 1, millisPerLine: 600  , verticalSections: 6 } });
-      smoothie.addTimeSeries(line1_CUP, { strokeStyle: 'rgb(255,   0,   0)', fillStyle: 'rgba(  0, 255,   0, 0)', lineWidth: 2 });
-      smoothie.addTimeSeries(line2_CUP, { strokeStyle: 'rgb(  0, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
-      smoothie.addTimeSeries(line3_CUP, { strokeStyle: 'rgb(  0,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
-      smoothie.addTimeSeries(line4_CUP, { strokeStyle: 'rgb(255, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
-      smoothie.addTimeSeries(line5_CUP, { strokeStyle: 'rgb(255,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
-      smoothie.addTimeSeries(line6_CUP, { strokeStyle: 'rgb(  0, 255, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
-      smoothie.streamTo(document.getElementById("mycanvas_CUP"), 500);
+      smoothie.addTimeSeries(line_100, { strokeStyle: 'rgb(255,   0,   0)', fillStyle: 'rgba(  0, 255,   0, 0)', lineWidth: 2 });
+      smoothie.addTimeSeries(line_200, { strokeStyle: 'rgb(  0, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+      smoothie.addTimeSeries(line_300, { strokeStyle: 'rgb(  0,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+      smoothie.addTimeSeries(line_400, { strokeStyle: 'rgb(255, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+      smoothie.addTimeSeries(line_500, { strokeStyle: 'rgb(255,   0, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+      smoothie.addTimeSeries(line_600, { strokeStyle: 'rgb(  0, 255, 255)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+      smoothie.streamTo(document.getElementById("mycanvas_TOTAL"), 500);
       
-      var line1_ACE = new TimeSeries();
+      var line_FAR = new TimeSeries();
+      var line_SUP = new TimeSeries();
       var smoothie = new SmoothieChart({interpolation:'linear',minValue:0,millisPerPixel: 60,
       grid: { strokeStyle: 'rgb(0,80,  0)', fillStyle: 'rgb(0,30, 0)', lineWidth: 1, millisPerLine: 600  , verticalSections: 6 } });
-      smoothie.addTimeSeries(line1_ACE, { strokeStyle: 'rgb(255,   255,   200)', fillStyle: 'rgba(  0, 255,   0, 0)', lineWidth: 2 });
-      smoothie.streamTo(document.getElementById("mycanvas_ACE"), 500);
+      smoothie.addTimeSeries(line_FAR, { strokeStyle: 'rgb(255,   0,   0)', fillStyle: 'rgba(  0, 255,   0, 0)', lineWidth: 2 });
+      smoothie.addTimeSeries(line_SUP, { strokeStyle: 'rgb(  0, 255,   0)', fillStyle: 'rgba(255,   0, 255, 0)', lineWidth: 2 });
+      smoothie.streamTo(document.getElementById("mycanvas_FAR"), 500);
       
       
       ws.onmessage = function (event) {
         var nombre_fuentes=["Nivel_100_ACE_getI","Nivel_100_CUP_getI","Nivel_200_CDO_getI","Nivel_200_ACE_getI","Nivel_200_CUP_getI",
-        "Nivel_300_getI","Nivel_400_getI","Nivel_500_getI","Nivel_600_getI","Nivel_SUP_getI"]
+        "Nivel_300_getI","Nivel_400_getI","Nivel_500_getI","Nivel_600_getI","Nivel_SUP_getI","Nivel_FAR_getI"]
         var data = JSON.parse(event.data);
-        console.log(data)
+        // console.log(data)
         
-        val_1=(Number(data.Nivel_100_ACE_getI)+Number(data.Nivel_100_CUP_getI))/2
-        val_2=(Number(data.Nivel_200_ACE_getI)+Number(data.Nivel_200_CUP_getI)+Number(data.Nivel_200_CDO_getI))/3
-        val_3=Number(data.Nivel_300_getI)
-        val_4=Number(data.Nivel_400_getI)
-        val_5=Number(data.Nivel_500_getI)
-        val_6=Number(data.Nivel_600_getI)
-        val_i=Number(data.Nivel_FAR_getI)
-        console.log(val_i)
+        val_100=(Number(data.Nivel_100_ACE_getI)+Number(data.Nivel_100_CUP_getI))/2
+        val_200=(Number(data.Nivel_200_ACE_getI)+Number(data.Nivel_200_CUP_getI)+Number(data.Nivel_200_CDO_getI))/3
+        val_300=Number(data.Nivel_300_getI)
+        val_400=Number(data.Nivel_400_getI)
+        val_500=Number(data.Nivel_500_getI)
+        val_600=Number(data.Nivel_600_getI)
+        val_sup=Number(data.Nivel_SUP_getI)
+        val_far=Number(data.Nivel_FAR_getI)
+        // console.log(val_far)
         if (data){
-            line1_CUP.append(new Date().getTime(), val_1);
-            line2_CUP.append(new Date().getTime(), val_2);
-            line3_CUP.append(new Date().getTime(), val_3);
-            line4_CUP.append(new Date().getTime(), val_4);
-            line5_CUP.append(new Date().getTime(), val_5);
-            line6_CUP.append(new Date().getTime(), val_6);
-            try{document.getElementById('Valor_Nivel_100_CUP').innerHTML=val_1.toFixed(1) + ' mA';}catch(error){}
-            try{document.getElementById('Valor_Nivel_200_CUP').innerHTML=val_2.toFixed(1) + ' mA';}catch(error){}
-            try{document.getElementById('Valor_Nivel_300_CUP').innerHTML=val_3.toFixed(1) + ' mA';}catch(error){}
-            try{document.getElementById('Valor_Nivel_400_CUP').innerHTML=val_4.toFixed(1) + ' mA';}catch(error){}
-            try{document.getElementById('Valor_Nivel_500_CUP').innerHTML=val_5.toFixed(1) + ' mA';}catch(error){}
-            try{document.getElementById('Valor_Nivel_600_CUP').innerHTML=val_6.toFixed(1) + ' mA';}catch(error){}
+            line_100.append(new Date().getTime(), val_100);
+            line_200.append(new Date().getTime(), val_200);
+            line_300.append(new Date().getTime(), val_300);
+            line_400.append(new Date().getTime(), val_400);
+            line_500.append(new Date().getTime(), val_500);
+            line_600.append(new Date().getTime(), val_600);
+            try{document.getElementById('Valor_Nivel_100_CUP').innerHTML=val_100.toFixed(1) + ' mA';}catch(error){}
+            try{document.getElementById('Valor_Nivel_200_CUP').innerHTML=val_200.toFixed(1) + ' mA';}catch(error){}
+            try{document.getElementById('Valor_Nivel_300_CUP').innerHTML=val_300.toFixed(1) + ' mA';}catch(error){}
+            try{document.getElementById('Valor_Nivel_400_CUP').innerHTML=val_400.toFixed(1) + ' mA';}catch(error){}
+            try{document.getElementById('Valor_Nivel_500_CUP').innerHTML=val_500.toFixed(1) + ' mA';}catch(error){}
+            try{document.getElementById('Valor_Nivel_600_CUP').innerHTML=val_600.toFixed(1) + ' mA';}catch(error){}
 
-            line1_ACE.append(new Date().getTime(), val_i);
-             try{document.getElementById('Valor_Nivel_100_ACE').innerHTML=val_i.toFixed(2) + ' mA';}catch(error){}
+            line_FAR.append(new Date().getTime(), val_far);
+            line_SUP.append(new Date().getTime(), val_sup);
           }
             
         if (data.count==1 && p==0){

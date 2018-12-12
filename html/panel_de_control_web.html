@@ -34,6 +34,7 @@ button:focus{
 	font-family: "Arial";
 	font-weight:bold;
 	font-size: 12px;
+	width: 50px;
 }
 button:active{
 	background: #000;
@@ -45,7 +46,7 @@ button:active{
 	font-size: 28px;
 	display: block;
 	text-align: center;
-	width: 102.5px;
+	width: 113.4px;
 	color: #ff9900;
 	color: #669900;
 }
@@ -242,8 +243,8 @@ label.ace{
 		</tr>
 	</tbody>
 </table>
-<button onclick="definir()" style="width: 100px;height:30px; align-content: left;">Definir</button>
-	
+<button onclick="definir()" style="width: 100px;height:25px; align-content: left;">Definir</button>
+<p></p>
 
 <table id='tabla_fuente_normal' style="margin-left:-4px">
 			<td>
@@ -450,7 +451,24 @@ label.ace{
 					</tr>
 				</table>
 			</td>
+			<td><iframe src="./graficos_alertas.html" height="284px" width="530px" frameborder="0"></iframe>
+				<table id="Nivel_030_ACE" style="visibility:visible;">
+					<tr ><td colspan="9"><label id="titulo"><details><summary>Nivel_-30_ION</summary>--</details></label></td></tr>
+					<tr>
+						<td><button id="cambiar" class='inactivo' onclick="mensaje(event)">OFF</button></td>
+						<td colspan="2"><label ondblclick="editar(event)" id="valor">--</label></td>
+						<td><button id="paso_bajar" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_do.png"></button></td>
+						<td><button id="paso_subir" onclick="mensaje(event)"><img width='15px' src="./imagenes/st_up.png"></button></td>
+						<td><button id="rampa_bajar" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_do.png"></button></td>
+						<td><button id="rampa_subir" class="brampa" onclick="mensaje(event)"><img width='15px' src="./imagenes/ra_up.png"></button></td>
+					</tr>
+				</table>
+			</td>
+			<td>
+				
+			</td>
 </table>
+<p></p>
 		<!-- rampas no habilitadas -->
 <table style="display:none;">
 	<td>
@@ -485,7 +503,7 @@ label.ace{
 <table> <!-- graficos -->
 	<tr>
 		<tr><iframe style="margin-left:-14px" src="./graficos_tensiones.html" width="1450px" height="210px" frameborder="0"></iframe></tr>
-		<tr><iframe style="margin-left:-14px;margin-top:-24px;" src="./graficos_corrientes.html" width="1300px" height="220px" frameborder="0"></iframe></tr>
+		<tr><iframe style="margin-left:-14px;margin-top:-24px;" src="./graficos_corrientes.html" width="1450px" height="220px" frameborder="0"></iframe></tr>
 	</tr>
 </table>	
 </body>

@@ -30,15 +30,20 @@ class esp():
         self.lista_fuentes = set()
         self.ultimo_lec = {}
         self.ultimo_esc = {}
+        self.ultimo_dif = {}
         self.ultimo_tiempo = datetime.datetime.now()
         
     def activar(self):
         '''
         Inicializa en 0 todos los valores de escritura de la placa.
+        Inicializa en 0 todos los valores de lectura de la placa.
         '''
         for key in self.variables_escritura:
             self.ultimo_esc[key] = 0
-             
+
+        for key in self.variables_lectura:
+            self.ultimo_lec[key] = 0            
+
     def set_fuentes(self, lista: str):
         '''
         Asignar nombres locales (a nivel soft de control) de las
@@ -56,8 +61,7 @@ class esp():
         {'Nivel_200_CUP_onoff':'encendidoF1','Nivel_200_CUP_setV':'setV_F1'}
         '''
         self.variables_lectura.update(lista_variables)
-        for j in lista_variables:
-            self.ultimo_lec.update({lista_variables[j]: 0})
+    
             
     def set_variables_escritura(self, lista_variables: dict):
         '''
@@ -65,7 +69,8 @@ class esp():
         de la placa.
         lista_variables: Diccionario con el mapeo
         i.e. Nombre local: "Nivel_200_CDO_setV" -> Nombre firmware: "setV_F1"
-        {'rdV_F1':'Nivel_200_CUP_getV','rdI_F1':'Nivel_200_CUP_getI'}
+        {'Nivel_600_ACE_getV': {'mas':'rdV_f100k','menos':'rdV_f10k'}}
+        {'Nivel_200_CDO_getV':'rdV_F1','Nivel_200_CDO_getI':'rdI_F1'}
         '''
         self.variables_escritura.update(lista_variables)
         
@@ -115,21 +120,32 @@ class esp():
         valores: Diccionario con los valores de seteo de la/s fuente/s
         '''
         check = True
-        ultimo = {}
         mensaje = json.loads(msg.payload)
-        if len(mensaje) != len(self.variables_lectura):
-            check = False
-            print('la cantidad de valores leidos es incorrecta')
-            print('se esperan', len(self.variables_lectura), 'valores')
-            print('se recibieron', len(mensaje), 'valores')
-        else:
-            for datos in mensaje:
-                if datos in self.variables_lectura.keys():
-                    ultimo[self.variables_lectura[datos]] = mensaje[datos]
-                else:
-                    check = False
-                    print('lista de lectura incorrecta... \
-                          utilice la funcion set_variables_lectura')
-                    print('no se encontro la clave '+datos)
-        if check:
-            self.ultimo_lec = ultimo
+
+        ultimo={key:0 for key in self.variables_lectura.keys()}
+        for nombres_locales in self.variables_lectura.keys():
+            if isinstance(self.variables_lectura[nombres_locales],dict): #si la asignacion es por diccionario
+                try: # intento leer la clave mas
+                    if 'mas' in self.variables_lectura[nombres_locales].keys():
+                        ultimo[nombres_locales]+=mensaje[self.variables_lectura[nombres_locales]['mas']]
+                except:
+                    print('las claves en "mas" son incorrectas')
+                    print("'"+self.variables_lectura[nombres_locales]['mas']+"'")
+                    print(mensaje.keys())
+                    check=False
+                try: # intento leer la clave menos
+                    if 'menos' in self.variables_lectura[nombres_locales].keys():
+                        ultimo[nombres_locales]-=mensaje[self.variables_lectura[nombres_locales]['menos']]
+                except:
+                    print('las claves en "menos" son incorrectas')
+                    print("'"+self.variables_lectura[nombres_locales]['menos']+"'")
+                    print(mensaje.keys())
+                    check=False
+            else: #si la asignacion es directa
+                try:
+                    ultimo[nombres_locales]=mensaje[self.variables_lectura[nombres_locales]]
+                except:
+                    check=False
+        if check==False: # si hay algun error escribo Error_Lec en todas las claves
+            ultimo={key:'Error_Lec' for key in self.variables_lectura.keys()}
+        self.ultimo_lec=ultimo # actualizo la lectura
