@@ -235,7 +235,7 @@ def on_message(mqttc, obj, msg):
         escritura_db() # escribo en la base de datos
 
 
-server = "192.168.44.225"
+server = "192.168.1.100"
 mqttc = mqtt.Client()
 mqttc.connect(server, 1883, 60)
 mqttc.on_message = on_message
